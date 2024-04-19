@@ -9,23 +9,25 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
     <v-container>
         
         <v-row>
-        <template v-for="n in 4" :key="n">
-            <v-col
-            class="mt-2"
-            cols="12"
-            >
-            <strong>Category {{ n }}</strong>
-            </v-col>
+            <v-card
+            class="mx-auto my-8"
+            elevation="16"
+            min-width=100%
+        >
+    <v-card-item>
+      <v-card-title>
+        Card title
+      </v-card-title>
 
-            <v-col
-            v-for="j in 6"
-            :key="`${n}${j}`"
-            cols="6"
-            md="2"
-            >
-            <v-sheet height="150"></v-sheet>
-            </v-col>
-        </template>
+      <v-card-subtitle>
+        Card subtitle secondary text
+      </v-card-subtitle>
+    </v-card-item>
+
+    <v-card-text>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    </v-card-text>
+  </v-card>
         </v-row>
     </v-container>
     </AdminLayout>
