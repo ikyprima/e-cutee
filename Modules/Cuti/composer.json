@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/cuti",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Cuti\\": "app/",
+            "Modules\\Cuti\\Database\\Factories\\": "database/factories/",
+            "Modules\\Cuti\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Cuti\\Tests\\": "tests/"
+        }
+    }
+}
