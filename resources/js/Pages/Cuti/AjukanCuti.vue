@@ -1,7 +1,5 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
 </script>
 
 <template>
@@ -35,10 +33,35 @@ import '@vuepic/vue-datepicker/dist/main.css';
             variant="outlined"
         ></v-combobox>
         <v-text-field clearable label="Alasan Cuti" variant="outlined"></v-text-field>
-        <div class="text-subtitle-2 mb-2">Tanggal </div>
+        <div class="text-subtitle-2 mb-2">Silahkan Pilih Tanggal </div>
         <v-divider class="border-opacity-25 pb-4" ></v-divider>
-        <VueDatePicker v-model="selectedDate"/>
+        <FullCalendar class='demo-app-calendar' :options='calendarOptions'>
+            <template v-slot:eventContent='arg'>
+                <b>{{ arg.timeText }}</b>
+                <i>{{ arg.event.title }}</i>
+            </template>
+        </FullCalendar>
+        <v-textarea class="pt-4" label="Alamat Selama Menjalankan Cuti" variant="outlined"></v-textarea>
+        <v-text-field clearable label="Nomor Telp" variant="outlined"></v-text-field>
     </v-card-text>
+    <v-card-actions>
+      
+      <v-list-item class="w-100">
+   
+
+        <template v-slot:append>
+          <div class="justify-self-end">
+            <v-btn
+            class="text-none mb-4"
+            color="indigo-darken-3"
+            variant="flat"
+            block
+            text="AJUKAN CUTI"
+        ></v-btn>
+          </div>
+        </template>
+      </v-list-item>
+    </v-card-actions>
   </v-card>
         </v-row>
     </v-container>
@@ -46,19 +69,103 @@ import '@vuepic/vue-datepicker/dist/main.css';
     </AdminLayout>
 </template>
 <script>
+// import '@fullcalendar/core/vdom'
+import moment from 'moment';
+import FullCalendar from '@fullcalendar/vue3'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import interactionPlugin from '@fullcalendar/interaction'
+import { INITIAL_EVENTS, createEventId } from './event-utils'
   export default {
-    components: { VueDatePicker },
+    components: {  FullCalendar },
     
-    data: () => ({
-        fromDateMenu: false,
-        selectedDate: null,
-        minDate: new Date().toISOString().substr(0, 10), // Mengatur tanggal minimum ke hari ini
-    }),
+    // data: () => ({
+        
+    // }),
+    data() {
+        return {
+            calendarOptions: {
+                plugins: [
+                    dayGridPlugin,
+                    timeGridPlugin,
+                    interactionPlugin // needed for dateClick
+                ],
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                initialView: 'dayGridMonth',
+                // initialEvents: INITIAL_EVENTS, // alternatively, use the `events` setting to fetch from a feed
+                editable: false,
+                selectable: true,
+                selectMirror: true,
+                dayMaxEvents: true,
+                weekends: true,
+                select: this.handleDateSelect,
+                eventClick: this.handleEventClick,
+                eventsSet: this.handleEvents,
+                // events: [
+                //     { title: 'event 1', date: '2024-04-01' },
+                //     { title: 'event 2', date: '2024-04-02' }
+                // ]
+                /* you can update a remote database when these fire:
+                eventAdd:
+                eventChange:
+                eventRemove:
+                */
+            },
+            currentEvents: [],
+            eventsAll: []
+        };
+    },
     computed: {
-        selectedDateFormatted() {
-      return this.selectedDate ? new Date(this.selectedDate).toLocaleDateString() : '';
+       
+    },
+    mounted() {
+        
+    },
+    methods: {
+
+        handleWeekendsToggle() {
+            this.calendarOptions.weekends = !this.calendarOptions.weekends // update a property
+        },
+
+        handleDateSelect(selectInfo) {
+            let title = prompt('Please enter a new title for your event')
+            let calendarApi = selectInfo.view.calendar
+            
+            calendarApi.unselect() // clear date selection
+
+            if (title) {
+                calendarApi.addEvent({
+                    id: createEventId(),
+                    title,
+                    start: selectInfo.startStr,
+                    end: selectInfo.endStr,
+                    allDay: selectInfo.allDay
+                })
+            }
+        },
+
+        handleEventClick(clickInfo) {
+            if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
+                clickInfo.event.remove()
+            }
+        },
+
+        handleEvents(events) {
+            this.currentEvents = events
+            this.eventsAll = events.map(event => ({
+                'title':event.title,
+                'tgl':event.startStr,
+                // 'end': event.endStr // End date
+                // 'end': event.endStr ? moment(event.endStr).subtract(1, 'day').format() : null
+            }));
+      
+        },
+      
+
     }
- 
-  }
-  }
+    }
 </script>
