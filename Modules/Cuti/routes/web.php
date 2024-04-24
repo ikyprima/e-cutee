@@ -19,6 +19,7 @@ Route::group([], function () {
 
     Route::prefix('admin')->group(function() {
         Route::get('/ajukan-cuti', [AjukanCutiController::class, 'AjukanCuti'])->name('admin-ajukan-cuti');
+        Route::post('/ajukan-cuti', [AjukanCutiController::class, 'Store'])->name('admin-ajukan-cuti-simpan');
     });
     
 });

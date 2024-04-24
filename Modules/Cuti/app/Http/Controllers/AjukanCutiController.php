@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 // use Illuminate\Http\Response;
 use Inertia\Inertia;
 use Inertia\Response;
+use Modules\Pegawai\Models\ModelPegawai;
 
 class AjukanCutiController extends Controller
 {
@@ -30,9 +31,11 @@ class AjukanCutiController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
-        //
+        $idUser = 1;
+        $idPasien = 1;
+        return $request->all();
     }
 
     /**
@@ -68,6 +71,7 @@ class AjukanCutiController extends Controller
     }
 
     public function ajukanCuti(Request $request){
+        return modelPegawai::all();
         return Inertia::render('Cuti/AjukanCuti');
     }
 }

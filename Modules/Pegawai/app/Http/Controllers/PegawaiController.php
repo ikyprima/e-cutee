@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Modules\Pegawai\Models\ModelPegawai;
 
+use  App\Models\User;
 class PegawaiController extends Controller
 {
     /**
@@ -14,6 +16,7 @@ class PegawaiController extends Controller
      */
     public function index()
     {
+        return ModelPegawai::all();
         return view('pegawai::index');
     }
 

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tb_cuti_det_hirarki', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('id_hirarki');
-            $table->bigInteger('id_parent');
+            $table->integer('urutan');
             $table->bigInteger('id_jabatan');
             $table->softDeletes($column = 'deleted_at', $precision = 0);
             $table->timestamps();
