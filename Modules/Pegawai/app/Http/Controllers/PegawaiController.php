@@ -16,7 +16,7 @@ class PegawaiController extends Controller
      */
     public function index()
     {
-        return ModelPegawai::all();
+        // return ModelPegawai::with('pegawai.pegawai')->get();
         return view('pegawai::index');
     }
 

@@ -35,6 +35,7 @@ class AjukanCutiController extends Controller
     {
         $idUser = 1;
         $idPasien = 1;
+        
         return $request->all();
     }
 
