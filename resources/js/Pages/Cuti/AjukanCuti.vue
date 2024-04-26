@@ -115,10 +115,10 @@ import { INITIAL_EVENTS, createEventId } from './event-utils'
                 select: this.handleDateSelect,
                 eventClick: this.handleEventClick,
                 eventsSet: this.handleEvents,
-                events: [
-                    { title: 'event 1', date: '2024-04-01' },
-                    { title: 'event 2', date: '2024-04-02' }
-                ]
+                // events: [
+                //     { title: 'event 1', date: '2024-04-01',color:'#ff0000' },
+                //     { title: 'event 2', date: '2024-04-02' }
+                // ]
                 /* 
                 eventAdd:
                 eventChange:
@@ -194,7 +194,8 @@ import { INITIAL_EVENTS, createEventId } from './event-utils'
                         title,
                         start: selectInfo.startStr,
                         end: selectInfo.endStr,
-                        allDay: selectInfo.allDay
+                        allDay: selectInfo.allDay,
+                        color:'#ff0000'
                     })
                 }
             }
@@ -211,6 +212,7 @@ import { INITIAL_EVENTS, createEventId } from './event-utils'
             this.formAjukanCuti.tanggal = events.map(event => ({
                 'title':event.title,
                 'tgl':event.startStr,
+                'color':event.backgroundColor,
                 // 'end': event.endStr // End date
                 // 'end': event.endStr ? moment(event.endStr).subtract(1, 'day').format() : null
             }));

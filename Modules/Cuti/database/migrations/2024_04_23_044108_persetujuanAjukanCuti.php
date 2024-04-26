@@ -16,7 +16,7 @@ return new class extends Migration
             $table->bigInteger('id_ajukan_cuti');
             $table->bigInteger('id_detail_hirarki');
             $table->string('status')->default(0);
-            $table->bigInteger('id_pegawai');
+            $table->bigInteger('id_pegawai')->nullable();
             $table->softDeletes($column = 'deleted_at', $precision = 0);
             $table->timestamps();
         });

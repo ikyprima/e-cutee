@@ -14,7 +14,7 @@ class modelJabatan extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [];
-
+    protected $table = 'tb_jabatan';
     protected static function newFactory(): ModelJabatanFactory
     {
         //return ModelJabatanFactory::new();

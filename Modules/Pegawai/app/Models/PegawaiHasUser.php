@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Pegawai\Database\Factories\PegawaiHasUserFactory;
 use Modules\Pegawai\Models\ModelPegawai;
+use Modules\Pegawai\Models\ModelJabatan;
+
 class PegawaiHasUser extends Model
 {
     use HasFactory;
@@ -25,5 +27,6 @@ class PegawaiHasUser extends Model
     public function pegawai() {
         return $this->hasOne(ModelPegawai::class,'id','id_pegawai');
     }
+  
     
 }
