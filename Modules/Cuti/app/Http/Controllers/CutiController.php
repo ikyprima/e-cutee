@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Inertia\Inertia;
+use Modules\Cuti\Models\AjukanCuti;
 
 class CutiController extends Controller
 {
@@ -14,7 +16,12 @@ class CutiController extends Controller
      */
     public function index()
     {
-        return view('cuti::index');
+        $id_pegawai = 1;
+        $dataCuti = AjukanCuti::where('id_pegawai',$id_pegawai)->with('detailTanggal','detailPersetujuan')->paginate(10);
+        
+        return Inertia::render('Cuti/Index',[
+            'data' => $dataCuti
+        ]);
     }
 
     /**

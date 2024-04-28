@@ -15,10 +15,9 @@ use Modules\Cuti\Http\Controllers\AjukanCutiController;
 */
 
 Route::group([], function () {
-    Route::resource('cuti', CutiController::class)->names('cuti');
-
     Route::prefix('admin')->group(function() {
-        Route::get('/ajukan-cuti', [AjukanCutiController::class, 'AjukanCuti'])->name('admin-ajukan-cuti');
+        Route::get('/cuti', [CutiController::class, 'index'])->name('admin-index-cuti');
+        Route::get('/cuti/ajukan', [AjukanCutiController::class, 'AjukanCuti'])->name('admin-ajukan-cuti');
         Route::post('/ajukan-cuti', [AjukanCutiController::class, 'Store'])->name('admin-ajukan-cuti-simpan');
     });
     
