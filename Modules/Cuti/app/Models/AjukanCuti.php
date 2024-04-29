@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Cuti\Database\Factories\AjukanCutiFactory;
 use Modules\Cuti\Models\AjukanCutiTanggal;
 use Modules\Cuti\Models\AjukanCutiPersetujuan;
+use Modules\Cuti\Models\JenisCuti;
 class AjukanCuti extends Model
 {
     use HasFactory;
@@ -26,5 +27,8 @@ class AjukanCuti extends Model
     }
     function detailPersetujuan(){
         return $this->hasMany(AjukanCutiPersetujuan::class,'id_ajukan_cuti','id');
+    }
+    function jenisCuti(){
+        return $this->hasOne(JenisCuti::class,'id','id_jenis_cuti');
     }
 }

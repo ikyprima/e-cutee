@@ -17,10 +17,10 @@ class CutiController extends Controller
     public function index()
     {
         $id_pegawai = 1;
-        $dataCuti = AjukanCuti::where('id_pegawai',$id_pegawai)->with('detailTanggal','detailPersetujuan')->paginate(10);
+        $dataCuti = AjukanCuti::with('jenisCuti')->where('id_pegawai',$id_pegawai)->with('detailTanggal','detailPersetujuan.pegawai')->paginate(10);
         
         return Inertia::render('Cuti/Index',[
-            'data' => $dataCuti
+            'dataCuti' => $dataCuti
         ]);
     }
 

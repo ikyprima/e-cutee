@@ -5,7 +5,8 @@ namespace Modules\Cuti\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Cuti\Database\Factories\AjukanCutiPersetujuanFactory;
-
+use Modules\Cuti\Models\DetailHirarki;
+use Modules\Pegawai\Models\ModelPegawai;
 class AjukanCutiPersetujuan extends Model
 {
     use HasFactory;
@@ -20,4 +21,12 @@ class AjukanCutiPersetujuan extends Model
     {
         //return AjukanCutiPersetujuanFactory::new();
     }
+
+    function dethirarki(){
+        return $this->hasOne(DetailHirarki::class,'id','id_detail_hirarki');
+    }
+    function pegawai(){
+        return $this->hasOne(ModelPegawai::class,'id','id_pegawai');
+    }
+    
 }
