@@ -1,5 +1,6 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { router } from '@inertiajs/vue3';
 </script>
 
 <template>
@@ -71,10 +72,30 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
         >
     <v-card-item >
     
-    
-      <v-card-title class="pb-4">
+      <v-list-item >
+     
+
+      <template v-slot:title>
+          <v-card-title class="pb-4">
+        
         List Pengajuan Cuti
+       
       </v-card-title>
+    </template>
+
+      <template v-slot:append>
+        <v-btn
+         @click="tambah"
+          prepend-icon="mdi-plus"
+          class="text-none"
+          color="primary"
+          text="Ajukan Cuti"
+          variant="outlined"
+          slim
+        ></v-btn>
+      </template>
+    </v-list-item>
+     
       <v-divider class="pb-4"></v-divider>
     
     </v-card-item>
@@ -179,9 +200,18 @@ import moment from 'moment';
     },
     methods: {
       klik(value){
-        this.objRow = value.detail_persetujuan;
-        this.dialog = !this.dialog;
-    }
+          this.objRow = value.detail_persetujuan;
+          this.dialog = !this.dialog;
+      },
+      tambah(){
+        router.get('/admin/cuti/ajukan', {
+          }, {
+              replace: true,
+              preserveScroll: true,
+              preserveState: true  
+          })
+          
+      },
 
     }
     }
