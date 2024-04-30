@@ -35,10 +35,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
         <div class="text-subtitle-2 mb-2">Silahkan Pilih Tanggal </div>
         <v-divider class="border-opacity-25 pb-4" ></v-divider>
         <FullCalendar class='demo-app-calendar' :options='calendarOptions'>
-            <template v-slot:eventContent='arg'>
-                <b>{{ arg.timeText }}</b>
-                <i>{{ arg.event.title }}</i>
-            </template>
+        
         </FullCalendar>
         <v-textarea class="pt-4" label="Alamat Selama Menjalankan Cuti" variant="outlined" v-model="formAjukanCuti.alamat"></v-textarea>
         <v-text-field clearable label="Nomor Telp" variant="outlined" v-model="formAjukanCuti.noTelp"></v-text-field>

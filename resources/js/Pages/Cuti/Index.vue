@@ -204,7 +204,7 @@ import moment from 'moment';
           this.dialog = !this.dialog;
       },
       tambah(){
-        router.get('/admin/cuti/ajukan', {
+        router.get(route('admin-ajukan-cuti'), {
           }, {
               replace: true,
               preserveScroll: true,
