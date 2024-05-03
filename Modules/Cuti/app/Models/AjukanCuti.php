@@ -8,6 +8,7 @@ use Modules\Cuti\Database\Factories\AjukanCutiFactory;
 use Modules\Cuti\Models\AjukanCutiTanggal;
 use Modules\Cuti\Models\AjukanCutiPersetujuan;
 use Modules\Cuti\Models\JenisCuti;
+use Modules\Pegawai\Models\ModelPegawai;
 class AjukanCuti extends Model
 {
     use HasFactory;
@@ -30,5 +31,9 @@ class AjukanCuti extends Model
     }
     function jenisCuti(){
         return $this->hasOne(JenisCuti::class,'id','id_jenis_cuti');
+    }
+    
+    function pegawai(){
+        return $this->hasOne(ModelPegawai::class,'id','id_pegawai');
     }
 }

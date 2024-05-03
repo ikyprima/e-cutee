@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 // use Illuminate\Http\Response;
 use Inertia\Inertia;
 use Inertia\Response;
+use Redirect;
 use Modules\Pegawai\Models\PegawaiHasUser;
 use Modules\Cuti\Models\AjukanCuti;
 use Modules\Cuti\Models\AjukanCutiPersetujuan;
@@ -95,13 +96,15 @@ class AjukanCutiController extends Controller
                 ]);
             }
             foreach ($detailHirarki as $key => $item) {
+            
                 AjukanCutiPersetujuan::create([
                     'id_ajukan_cuti' =>  $id_ajukan_cuti,
                     'id_detail_hirarki' =>  $item['id'],
-                    'id_pegawai' =>  $item['id_pegawai']
+                    'id_pegawai' =>  $item['id_pegawai'],
+                    'aktif' => $item['urutan']==1?1:0
                 ]);
             }
-            return back(303);
+            return Redirect::route('admin-index-cuti');
         } catch (\Throwable $th) {
             //throw $th;
             return $th;

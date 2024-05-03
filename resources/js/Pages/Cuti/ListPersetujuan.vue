@@ -78,22 +78,12 @@ import { router } from '@inertiajs/vue3';
       <template v-slot:title>
           <v-card-title class="pb-4">
         
-        List Pengajuan Cuti
+        List Persetujuan Cuti
        
       </v-card-title>
     </template>
 
-      <template v-slot:append>
-        <v-btn
-         @click="tambah"
-          prepend-icon="mdi-plus"
-          class="text-none"
-          color="primary"
-          text="Ajukan Cuti"
-          variant="outlined"
-          slim
-        ></v-btn>
-      </template>
+     
     </v-list-item>
      
       <v-divider class="pb-4"></v-divider>
@@ -105,6 +95,12 @@ import { router } from '@inertiajs/vue3';
       <v-table>
     <thead>
       <tr>
+        <th class="text-left ">
+         <p class="text-subtitle-2"><b>NIP</b></p> 
+        </th>
+        <th class="text-left ">
+         <p class="text-subtitle-2"><b>NAMA</b></p> 
+        </th>
         <th class="text-left ">
          <p class="text-subtitle-2"><b>JENIS CUTI</b></p> 
         </th>
@@ -128,30 +124,32 @@ import { router } from '@inertiajs/vue3';
     </thead>
     <tbody>
       <tr
-        v-for="item in dataCuti.data"
+        v-for="item in dataCuti"
         :key="item.id"
       >
+        <td>{{ item.nip }}</td>
+        <td>{{ item.nama }}</td>
         <td>{{ item.jenis_cuti.jenis_cuti }}</td>
         <td>{{ item.alasan_cuti }}</td>
         <td>{{ item.alamat }}</td>
         <td>{{ item.telp }}</td>
         <td>
-          <v-badge v-if="item.status == 0"
+        <v-badge v-if="item.status_persetujuan == 0"
           color="info"
           content="Menunggu Persetujuan"
           inline
         ></v-badge>
-        <v-badge v-if="item.status == 1"
+        <v-badge v-else-if="item.status_persetujuan == 1"
           color="green"
           content="Disetujui"
           inline
         ></v-badge>
-        <v-badge v-if="item.status == 2"
+        <v-badge v-else
           color="error"
           content="Ditolak"
           inline
         ></v-badge>
-        </td>
+    </td>
         <td class="text-center">
           <v-btn-toggle
         
@@ -159,8 +157,7 @@ import { router } from '@inertiajs/vue3';
           divided
         >
 
-          <v-btn icon="mdi-account-file-text"   v-on:click="klik(item)" ></v-btn>
-          <v-btn icon="mdi-table-clock"></v-btn>
+          <v-btn icon="mdi-account-edit"   v-on:click="klik(item)" ></v-btn>
         </v-btn-toggle>
         </td>
 

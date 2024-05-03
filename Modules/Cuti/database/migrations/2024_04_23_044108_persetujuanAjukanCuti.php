@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('id_ajukan_cuti');
             $table->bigInteger('id_detail_hirarki');
-            $table->string('status')->default(0);
+            $table->char('status', 1)->default(0); // setujui atau tolak
+            $table->char('aktif', 1)->default(0); // aktif posisi persetujuan saat ini
             $table->bigInteger('id_pegawai')->nullable();
             $table->softDeletes($column = 'deleted_at', $precision = 0);
             $table->timestamps();

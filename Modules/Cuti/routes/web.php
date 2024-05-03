@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Cuti\Http\Controllers\CutiController;
 use Modules\Cuti\Http\Controllers\AjukanCutiController;
+use Modules\Cuti\Http\Controllers\PersetujuanCutiController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,6 +20,8 @@ Route::group([], function () {
         Route::get('/cuti', [CutiController::class, 'index'])->name('admin-index-cuti');
         Route::get('/cuti/ajukan', [AjukanCutiController::class, 'AjukanCuti'])->name('admin-ajukan-cuti');
         Route::post('/ajukan-cuti', [AjukanCutiController::class, 'Store'])->name('admin-ajukan-cuti-simpan');
+
+        Route::get('/cuti/persetujuan', [PersetujuanCutiController::class, 'index'])->name('admin-persetujuan-cuti');
     });
     
 });

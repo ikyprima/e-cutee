@@ -25,9 +25,9 @@
         </v-list>
         <v-divider></v-divider>
         <v-list density="compact" nav>
-          <v-list-item prepend-icon="mdi-folder" title="My Files" value="myfiles"  :href="'https://randomuser.me/'"></v-list-item>
-          <v-list-item prepend-icon="mdi-account-multiple" title="Shared with me" value="shared"></v-list-item>
-          <v-list-item prepend-icon="mdi-star" title="Starred" value="starred"></v-list-item>
+          <v-list-item prepend-icon="mdi-folder" title="CUTI" @click="handleClick('admin-index-cuti')"></v-list-item>
+          <v-list-item prepend-icon="mdi-account-multiple" title="PERSETUJUAN" @click="handleClick('admin-persetujuan-cuti')" ></v-list-item>
+        
         </v-list>
         <template v-slot:append >
           <div class="pa-2">
@@ -52,7 +52,7 @@
   
   <script setup>
     import { ref } from 'vue'
-  
+    import { router } from '@inertiajs/vue3';
     const drawer = ref(null)
   </script>
   
@@ -64,7 +64,16 @@
       methods: {
         updateRail(v) {
             this.statRail = v;
+        },
+        handleClick(value) {
+          router.get(route(value), {
+          }, {
+              replace: true,
+              preserveScroll: true,
+              preserveState: true  
+          })
         }   
+
       },
     }
   </script>

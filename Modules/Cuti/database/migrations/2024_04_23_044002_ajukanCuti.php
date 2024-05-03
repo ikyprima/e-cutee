@@ -18,6 +18,7 @@ return new class extends Migration
             $table->longText('alamat'); 
             $table->string('telp',12); 
             $table->bigInteger('id_pegawai');
+            $table->char('status', 1)->default(0);
             $table->softDeletes($column = 'deleted_at', $precision = 0);
             $table->timestamps();
         });
