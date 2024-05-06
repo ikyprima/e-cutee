@@ -22,6 +22,7 @@ Route::group([], function () {
         Route::post('/ajukan-cuti', [AjukanCutiController::class, 'Store'])->name('admin-ajukan-cuti-simpan');
 
         Route::get('/cuti/persetujuan', [PersetujuanCutiController::class, 'index'])->name('admin-persetujuan-cuti');
+        Route::post('/cuti/persetujuan', [PersetujuanCutiController::class, 'Store'])->name('admin-persetujuan-cuti-simpan');
     });
     
 });
