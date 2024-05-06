@@ -21,6 +21,14 @@ class PersetujuanCutiController extends Controller
          $dataCuti = AjukanCutiPersetujuan::where([['id_pegawai',$id_pegawai],['aktif',1]])
         ->with('masterajukancuti.pegawai.hasJabatan.jabatan')
         ->get()->map(function($item){
+            $tanggal = $item->masterajukancuti->detailTanggal->map(function($item){
+               return [
+                'title'=>$item->title,
+                'date'=>$item->tgl,
+                'color'=>$item->color
+               ];
+
+            });
             return [
                 'nip'=>$item->masterajukancuti->pegawai->nomor_induk_pegawai,
                 'nama'=>$item->masterajukancuti->pegawai->nama,
@@ -31,7 +39,7 @@ class PersetujuanCutiController extends Controller
                 'telp'=> $item->masterajukancuti->telp,
                 'status_pengajuan'=> $item->masterajukancuti->status,
                 'status_persetujuan'=>$item->status,
-                'tanggal_cuti'=>$item->masterajukancuti->detailTanggal,
+                'tanggal_cuti'=>$tanggal,
                 
             ];
         });
