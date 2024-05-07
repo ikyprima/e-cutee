@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
 use Modules\Cuti\Models\AjukanCutiPersetujuan;
-
+use Modules\Cuti\Models\DetailHirarki;
+use Modules\Cuti\Models\AjukanCuti;
 class PersetujuanCutiController extends Controller
 {
     /**
@@ -16,20 +17,33 @@ class PersetujuanCutiController extends Controller
      */
     public function index()
     {
-        $id_pegawai = 1;
-
-         $dataCuti = AjukanCutiPersetujuan::where([['id_pegawai',$id_pegawai],['aktif',1]])
+        $id_pegawai = 3;
+        $dataCuti = AjukanCutiPersetujuan::where([['id_pegawai',$id_pegawai],['aktif',1]])
         ->with('masterajukancuti.pegawai.hasJabatan.jabatan')
-        ->get()->map(function($item){
+        ->get()
+        ->map(function($item){
             $tanggal = $item->masterajukancuti->detailTanggal->map(function($item){
-               return [
+                return [
                 'title'=>$item->title,
                 'date'=>$item->tgl,
                 'color'=>$item->color
-               ];
-
+                ];
+            });
+            $detPersetujuan =  $item->masterajukancuti->detailPersetujuan->map(function($item){
+                return [
+                    'id_pegawai'=>$item->id,
+                    'nama_pegawai'=>$item->pegawai?$item->pegawai->nama:null,
+                    'jabatan'=>$item->pegawai?$item->pegawai->hasJabatan->jabatan->nama_jabatan:null,
+                    'status'=>$item->status,
+                    'aktif'=>$item->aktif,
+                    'created_at'=>$item->created_at,
+                    'updated_at'=>$item->updated_at,
+                ];
             });
             return [
+                'id'=>$item->id,
+                'id_detail_hirarki'=>$item->id_detail_hirarki,
+                'id_ajukan_cuti'=> $item->id_ajukan_cuti,
                 'nip'=>$item->masterajukancuti->pegawai->nomor_induk_pegawai,
                 'nama'=>$item->masterajukancuti->pegawai->nama,
                 'jabatan'=>$item->masterajukancuti->pegawai->hasJabatan->jabatan->nama_jabatan,
@@ -37,9 +51,10 @@ class PersetujuanCutiController extends Controller
                 'alasan_cuti'=>$item->masterajukancuti->alasan_cuti,
                 'alamat'=>$item->masterajukancuti->alamat,
                 'telp'=> $item->masterajukancuti->telp,
-                'status_pengajuan'=> $item->masterajukancuti->status,
-                'status_persetujuan'=>$item->status,
+                'status_pengajuan'=> $item->masterajukancuti->status, //status dokumen pengajuan cuti
+                'status_persetujuan'=>$item->status, //status persetujuan per orang
                 'tanggal_cuti'=>$tanggal,
+                'detail_persetujuan'=> $detPersetujuan
                 
             ];
         });
@@ -62,7 +77,60 @@ class PersetujuanCutiController extends Controller
      */
     public function store(Request $request)
     {
-        return $request->all();
+        if($request->status === 0){
+            //jika persetujuan ditolak
+            AjukanCuti::where('id',$request->id_ajukan_cuti)->update(
+                [
+                    'status' => 2, //0 menunggu, 1 Disetujui, 2 Ditolak
+                ],
+            );
+            AjukanCutiPersetujuan::where('id', $request->id)->update(
+                [
+                    'status' => 2, //0 menunggu, 1 Disetujui, 2 Ditolak
+                ],
+            );
+            return to_route('admin-persetujuan-cuti')->with(['message'=>'Sukses Simpan Data']);
+            
+        }elseif($request->status === 1){
+            //jika disetujui
+           $detHirarki =  DetailHirarki::where('id',$request->id_detail_hirarki)->first();
+           $selanjutnya = DetailHirarki::where('id_hirarki',$detHirarki->id_hirarki )
+           ->where('urutan', '>', $detHirarki->urutan)
+           ->orderBy('urutan', 'asc')
+           ->first();
+            if ($selanjutnya) {
+                //update status aktif pada detail persetujuan
+                AjukanCutiPersetujuan::where('id', $request->id)->update(
+                    [
+                        'status' => 1, //0 menunggu, 1 Disetujui, 2 Ditolak
+                    ],
+                );
+                AjukanCutiPersetujuan::where('id_ajukan_cuti', $request->id_ajukan_cuti)
+                ->where('id_detail_hirarki', $selanjutnya->id)
+                ->update(
+                    [
+                        'aktif' => 1, //0 menunggu, 1 posisi persetujuan ada di sini
+                    ],
+                );
+                
+                return to_route('admin-persetujuan-cuti')->with(['message'=>'Sukses Simpan Data']);
+            }else{
+                //jika tidak ada berarti baris terakhir, atau prose persetujuan sudah selesai, update table master persetujuan
+                AjukanCutiPersetujuan::where('id', $request->id)->update(
+                    [
+                        'status' => 1, //0 menunggu, 1 Disetujui, 2 Ditolak
+                    ],
+                );
+                AjukanCuti::where('id',$request->id_ajukan_cuti)->update(
+                    [
+                        'status' => 1, //0 menunggu, 1 Disetujui, 2 Ditolak
+                    ],
+                );
+                return to_route('admin-persetujuan-cuti')->with(['message'=>'Sukses Simpan Data']);
+            }
+        
+        }
+        
     }
 
     /**
