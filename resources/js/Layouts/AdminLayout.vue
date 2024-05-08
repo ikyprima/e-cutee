@@ -52,6 +52,7 @@
   
   <script setup>
     import { ref } from 'vue'
+    import 'vuetify/styles'
     import { router } from '@inertiajs/vue3';
     const drawer = ref(null)
   </script>

@@ -1,5 +1,7 @@
 {
     "Cuti": true,
     "Pegawai": true,
-    "User": true
+    "User": true,
+    "Role": true,
+    "Permission": true
 }
