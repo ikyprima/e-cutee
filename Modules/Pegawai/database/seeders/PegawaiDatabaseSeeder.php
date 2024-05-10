@@ -5,6 +5,7 @@ namespace Modules\Pegawai\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Modules\Pegawai\Models\ModelPegawai;
 use App\Models\User;
+use Modules\Role\Models\Role;
 class PegawaiDatabaseSeeder extends Seeder
 {
     /**
@@ -506,14 +507,18 @@ class PegawaiDatabaseSeeder extends Seeder
             ];
         });
         ModelPegawai::insert($pegawai->toArray());
+        $role = Role::firstOrCreate([
+            'name' => 'pegawai'
+        ]);
         foreach ($pegawai as $key => $value) {
-            User::updateOrCreate([
+            $user = User::firstOrCreate([
                 'username' => $value['nomor_induk_pegawai'],
+                ],[
                 'name'	=> $value['nama'],
                 'email'	=> $value['nomor_induk_pegawai'] . '@sumbarprov.go.id',
                 'password'	=> bcrypt( $value['nomor_induk_pegawai'])
             ]);
-
+            $user->assignRole($role->name);
         }
         // $this->call([]);
     }

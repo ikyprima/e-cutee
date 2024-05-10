@@ -47,8 +47,52 @@ class HandleInertiaRequests extends Middleware
             )
                 ],
                 [
-                    'id_header' => 0,
+                    'id_header' => 1,
                     "header"=> "Manajemen",
+                    "order"=> 0,
+                    "menu" => array(
+                        [
+                            "id"=> 1,
+                            "title"=> "Pegawai",
+                            "url"=> "pegawai",
+                            "name_route"=> "pegawai.index",
+                            "icon"=> null,
+                            'children'=>[]
+        
+                        ],
+                        [
+                            "id"=> 2,
+                            "title"=> "jabatan",
+                            "url"=> "jabatan",
+                            "name_route"=> "jabatan.index",
+                            "icon"=> null,
+                            'children'=>[]
+        
+                        ],
+                        [
+                            "id"=> 3,
+                            "title"=> "Alur Persetujuan Cuti",
+                            "url"=> "hirarkicuti",
+                            "name_route"=> "hirarkicuti.index",
+                            "icon"=> null,
+                            'children'=>[]
+        
+                        ],
+                        [
+                            "id"=> 4,
+                            "title"=> "Rekap Cuti",
+                            "url"=> "rekap-cuti",
+                            "name_route"=> "rekap.cuti.index",
+                            "icon"=> null,
+                            'children'=>[]
+        
+                        ]
+                        
+                    )
+                ],
+                [
+                    'id_header' => 2,
+                    "header"=> "Setting",
                     "order"=> 0,
                     "menu" => array(
                         [

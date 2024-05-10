@@ -16,16 +16,16 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
         >
     <v-card-item>
       <v-card-title>
-        Card title
+        Dashboard
       </v-card-title>
 
       <v-card-subtitle>
-        Card subtitle secondary text
+      
       </v-card-subtitle>
     </v-card-item>
 
     <v-card-text>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      SELAMAT DATANG <b> {{ $page.props.auth.user.name }}.</b>
     </v-card-text>
   </v-card>
         </v-row>

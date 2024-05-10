@@ -10,6 +10,8 @@ use Inertia\Inertia;
 use Modules\Cuti\Models\AjukanCutiPersetujuan;
 use Modules\Cuti\Models\DetailHirarki;
 use Modules\Cuti\Models\AjukanCuti;
+use Modules\Pegawai\Models\Pegawai;
+use Auth;
 class PersetujuanCutiController extends Controller
 {
     /**
@@ -17,7 +19,8 @@ class PersetujuanCutiController extends Controller
      */
     public function index()
     {
-        $id_pegawai = 3;
+        $pegawai = Pegawai::where('nomor_induk_pegawai',Auth::user()->username)->first();
+        $id_pegawai =  $pegawai->id;
         $dataCuti = AjukanCutiPersetujuan::where([['id_pegawai',$id_pegawai],['aktif',1]])
         ->with('masterajukancuti.pegawai.hasJabatan.jabatan')
         ->get()

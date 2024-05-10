@@ -8,7 +8,7 @@ use Modules\Pegawai\Database\Factories\ModelPegawaiFactory;
 use Modules\Cuti\Models\HirarkiHasPegawai;
 use Modules\Pegawai\Models\PegawaiHasJabatan;
 
-class modelPegawai extends Model
+class ModelPegawai extends Model
 {
     use HasFactory;
     

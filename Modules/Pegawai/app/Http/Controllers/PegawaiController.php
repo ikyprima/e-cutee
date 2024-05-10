@@ -5,7 +5,11 @@ namespace Modules\Pegawai\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Inertia\Inertia;
+use Inertia\Response;
+use Validator;
+use Redirect;
+use Illuminate\Support\MessageBag;
 use Modules\Pegawai\Models\ModelPegawai;
 
 use  App\Models\User;
@@ -18,8 +22,10 @@ class PegawaiController extends Controller
     {
       
         
-        // return ModelPegawai::with('pegawai.pegawai')->get();
-        return view('pegawai::index');
+        $pegawai=ModelPegawai::paginate(10);
+        return Inertia::render('Pegawai/Index',[
+            'pegawai'=>$pegawai
+        ]);
     }
 
     /**

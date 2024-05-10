@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('id_hirarki');
             $table->integer('urutan');
-            $table->bigInteger('id_jabatan');
+            $table->bigInteger('id_jabatan')->nullable();
             $table->softDeletes($column = 'deleted_at', $precision = 0);
             $table->timestamps();
         });

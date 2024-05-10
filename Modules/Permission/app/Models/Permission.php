@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Permission\Database\Factories\PermissionFactory;
 use Spatie\Permission\Models\Permission as SpatiePermission;
-class permission extends SpatiePermission
+class Permission extends SpatiePermission
 {
     use HasFactory;
 

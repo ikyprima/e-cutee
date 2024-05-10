@@ -19,11 +19,11 @@ import Dialog from '@/Components/notus/Dialog.vue';
 
 <template>
 
-    <Head title="Manajemen Permission" />
+    <Head title="Manajemen Pegawai" />
 
     <AdminLayout>
         <template #textnavbar>
-            Permission
+            MANAJEMEN PEGAWAI
         </template> 
         
         <template #header>
@@ -42,7 +42,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
         <div class="flex flex-wrap mt-4">
             <div class="w-full mb-12 px-4">
 
-                <card-table @clickedit="clickedit" @clickhapus="clickhapus" :list=permission.data :header=setting namaTitle='PERMISSION'> 
+                <card-table @clickedit="clickedit" @clickhapus="clickhapus" :list=pegawai.data :header=setting namaTitle='LIST PEGAWAI'> 
                     <template #button>
                         <div class="hidden md:block">
                             <ButtonTambah @click="tambahData">Tambah</ButtonTambah>
@@ -68,7 +68,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
                 <footer class="px-2 py-4 border-t border-gray-100 bg ">
                     <nav aria-label="Page navigation example ">
                         <ul class="flex list-style-none ">
-                            <li class="page-item" v-for="paging in permission?permission.links:[]" :key="paging.id">
+                            <li class="page-item" v-for="paging in pegawai?pegawai.links:[]" :key="paging.id">
                                 <div v-if="paging.active == false && paging.url == null">
                                     <a class="
                                     page-link
@@ -211,7 +211,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
 export default {
     
     props: {
-        permission: Object,
+        pegawai: Object,
 
     },
     data() {
@@ -227,29 +227,15 @@ export default {
             setting: [ //seting header table
                 {
 
-                    title: 'Permission',
-                    field: 'name',
+                    title: 'NIP',
+                    field: 'nomor_induk_pegawai',
                     type: 'string',
                     size: 'auto',
                     align: 'left'
                 },
                 {
-                    title: 'Guard',
-                    field: 'guard_name',
-                    type: 'string',
-                    size: 'auto',
-                    align: 'left'
-                },
-                {
-                    title: 'Controller',
-                    field: 'controller',
-                    type: 'string',
-                    size: 'auto',
-                    align: 'left'
-                },
-                {
-                    title: 'Function',
-                    field: 'function',
+                    title: 'Nama',
+                    field: 'nama',
                     type: 'string',
                     size: 'auto',
                     align: 'left'

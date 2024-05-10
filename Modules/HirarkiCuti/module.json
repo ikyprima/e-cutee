@@ -1,0 +1,11 @@
+{
+    "name": "HirarkiCuti",
+    "alias": "hirarkicuti",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\HirarkiCuti\\Providers\\HirarkiCutiServiceProvider"
+    ],
+    "files": []
+}

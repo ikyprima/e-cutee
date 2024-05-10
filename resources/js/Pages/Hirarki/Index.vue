@@ -7,7 +7,7 @@ import CardStats from "@/Components/notus/Cards/CardStats.vue";
 import { Head,Link } from '@inertiajs/vue3';
 
 import DangerButton from '@/Components/DangerButton.vue';
-
+import Multiselect from '@vueform/multiselect'
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -19,11 +19,11 @@ import Dialog from '@/Components/notus/Dialog.vue';
 
 <template>
 
-    <Head title="Manajemen Permission" />
+    <Head title="Manajemen Hirark Cuti" />
 
     <AdminLayout>
         <template #textnavbar>
-            Permission
+            Manajemen Hirarki
         </template> 
         
         <template #header>
@@ -42,7 +42,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
         <div class="flex flex-wrap mt-4">
             <div class="w-full mb-12 px-4">
 
-                <card-table @clickedit="clickedit" @clickhapus="clickhapus" :list=permission.data :header=setting namaTitle='PERMISSION'> 
+                <card-table @clickedit="clickedit" @clickhapus="clickhapus" :list=hirarki.data :header=setting namaTitle='List Hirarki Penanda Tanagan Cuti (Dalam Pengembangan)'> 
                     <template #button>
                         <div class="hidden md:block">
                             <ButtonTambah @click="tambahData">Tambah</ButtonTambah>
@@ -68,7 +68,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
                 <footer class="px-2 py-4 border-t border-gray-100 bg ">
                     <nav aria-label="Page navigation example ">
                         <ul class="flex list-style-none ">
-                            <li class="page-item" v-for="paging in permission?permission.links:[]" :key="paging.id">
+                            <li class="page-item" v-for="paging in hirarki?hirarki.links:[]" :key="paging.id">
                                 <div v-if="paging.active == false && paging.url == null">
                                     <a class="
                                     page-link
@@ -144,27 +144,66 @@ import Dialog from '@/Components/notus/Dialog.vue';
                     Tambah
                 </h3>
             </div>
-            <div class="relative p-6 flex-auto">
-                <form >
-                    
+            <div class="relative p-6 flex-auto animatecss animatecss-fadeInLeft">
+                <form @submit.prevent>
+                   
                     <div class="grid grid-cols-1 md:grid-cols-1 ">
-                        <div class="relative mb-2">
-                            <InputLabel for="permission" value="Permission" class="" />
-                            <TextInput
-                                id="permission"
-                                ref="permissionInput"
-                                type="text"
-                                class="mt-1 block w-full"
-                                placeholder="Permission"
-                                v-model="formpermission.permission"
-                            />
-                            <p v-if="formpermission.errors.permission" 
-                                class="mt-2 text-sm text-red-600 dark:text-red-500">
-                                {{formpermission.errors.permission }}
+                        <div class="relative mb-2 ">
+                            <InputLabel for="namahirarki" value="Nama" class="" />
+
+                            <TextInput id="namahirarki" ref="namahirarkiInput" type="text" class="mt-1 block w-full"
+                                placeholder="nama hirarki" v-model="formhirarki.nama_hirarki" />
+
+                            <p v-if="formhirarki.errors.nama_hirarki" class="mt-2 text-sm text-red-600 dark:text-red-500">
+                                {{ formhirarki.errors.nama_hirarki }}
                             </p>
                         </div>
-                        
+
+
                     </div>
+                    <template v-for="(item, index) in formhirarki.detail" :key="index">
+                        <Transition :duration="{ enter: 500, leave: 500 }">
+                            <div class="grid grid-cols-2 md:grid-cols-2 gap-2 ">
+                                <div class="relative   ">
+                                    <InputLabel value="Pilih Pegawai" />
+                                    <div class="mt-1 block w-full">
+                                        <Multiselect valueProp="id" v-model="formhirarki.detail[index]['id_pegawai']"
+                                            label="name" :searchable="true"
+                                            />
+                                    </div>
+                                </div>
+                                <div class="relative  ">
+                                    <InputLabel value="Urutan" class="" />
+                                    <div class="relative w-full ">
+                                        <TextInput :id="'menu-' + index" ref="menuInput" type="number"
+                                            class="mt-1 block w-full" placeholder="urutan" v-model="item.urutan" />
+                                        <button v-on="{ click: () => tambahAtauHapus(index) }" class="absolute top-0 right-0 p-2.5 h-full text-sm font-medium text-white
+                                                    rounded-r-lg
+                                                    border 
+                                                    focus:ring-4 focus:outline-none "
+                                            :class="[index == 0 ? 'bg-blue-700 border-blue-700 hover:bg-blue-800 focus:ring-blue-300' :
+                                                'bg-red-700 border-red-700 hover:bg-red-800 focus:ring-red-300']">
+                                            <template v-if="index == 0">
+                                                <i class="fas fa-lg fa-plus"></i>
+                                            </template>
+                                            <template v-else="index == 0">
+                                                <i class="fas fa-lg fa-trash-alt"></i>
+                                            </template>
+                                        </button>
+
+                                    </div>
+                                    <p v-if="$page.props.errors['detail.' + index + '.urutan']"
+                                        class="mt-2 text-sm text-red-600 dark:text-red-500">
+                                        {{ $page.props.errors['detail.' + index + '.urutan'] }}
+                                    </p>
+                                </div>
+                               
+                                
+                              
+                            </div>
+                        </Transition>
+
+                    </template>
                 </form>
             </div>
             <div class="mt-6 flex justify-end">
@@ -172,7 +211,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
                     Batal
                 </SecondaryButton>
                 <PrimaryButton class="ml-3" v-on:click="simpan" 
-                :class="{ 'opacity-25': formpermission.processing }" :disabled="formpermission.processing">
+                :class="{ 'opacity-25': formhirarki.processing }" :disabled="formhirarki.processing">
                 <div v-if="editMode == true">
                     Simpan Perubahan
                 </div>
@@ -196,7 +235,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
         <div class="text-center md:text-right mt-4 md:flex md:justify-end">
             <button v-on:click="hapus()"
                 class="block w-full md:inline-block md:w-auto px-4 py-3 md:py-2 bg-red-200 
-                text-red-700 rounded-lg font-semibold text-sm md:ml-2 md:order-2 " :class="{ 'opacity-25': formpermission.processing }" :disabled="formpermission.processing">
+                text-red-700 rounded-lg font-semibold text-sm md:ml-2 md:order-2 " :class="{ 'opacity-25': formhirarki.processing }" :disabled="formhirarki.processing">
                 Ya, Hapus</button>
             <button v-on:click="closeDialogHapus()" class="block w-full md:inline-block md:w-auto px-4 py-3 md:py-2 bg-gray-200 rounded-lg font-semibold text-sm mt-4
             md:mt-0 md:order-1">Batal</button>
@@ -211,48 +250,44 @@ import Dialog from '@/Components/notus/Dialog.vue';
 export default {
     
     props: {
-        permission: Object,
+        hirarki: Object,
 
+    },
+    components: {
+        Multiselect
     },
     data() {
         return {
             showModal: false,
             dialogHapus:false,
             editMode: false,
-            objpermission : null,
-            formpermission: this.$inertia.form({
-                permission: '',
+            objhirarki : null,
+            formhirarki: this.$inertia.form({
+                nama_hirarki: '',
+                detail : [
+                    {
+                        urutan: '',
+                        id_pegawai: ''
+                    }
+                ]
             }),
 
             setting: [ //seting header table
                 {
 
-                    title: 'Permission',
-                    field: 'name',
+                    title: 'Nama',
+                    field: 'nama_hirarki',
                     type: 'string',
-                    size: 'auto',
+                    size: 44,
                     align: 'left'
                 },
                 {
-                    title: 'Guard',
-                    field: 'guard_name',
-                    type: 'string',
-                    size: 'auto',
-                    align: 'left'
-                },
-                {
-                    title: 'Controller',
-                    field: 'controller',
-                    type: 'string',
-                    size: 'auto',
-                    align: 'left'
-                },
-                {
-                    title: 'Function',
-                    field: 'function',
-                    type: 'string',
-                    size: 'auto',
-                    align: 'left'
+
+                title: 'Nama',
+                field: 'nama_hirarki',
+                type: 'timeline',
+                size: 'auto',
+                align: 'left'
                 },
                 {
 
@@ -272,24 +307,24 @@ export default {
     methods: {
         tambahData() {
             this.editMode = false;
-            this.objpermission = null;
+            this.objhirarki = null;
             this.showModal = !this.showModal;
-            this.formpermission.reset()
-            this.formpermission.clearErrors()
+            this.formhirarki.reset()
+            this.formhirarki.clearErrors()
         },
         closeModal(){
             this.editMode = false;
             this.showModal = !this.showModal;
-            this.formpermission.reset();
-            this.formpermission.clearErrors()
+            this.formhirarki.reset();
+            this.formhirarki.clearErrors()
         },
         clickedit(value){
             this.editMode = true;
             this.objpermission = value;
             this.showModal = !this.showModal;
-            this.formpermission.reset()
-            this.formpermission.clearErrors()
-            this.formpermission.permission = value.name;
+            this.formhirarki.reset()
+            this.formhirarki.clearErrors()
+            this.formhirarki.permission = value.name;
         },
         clickhapus(value){
         
@@ -302,32 +337,32 @@ export default {
         },
         simpan() {
             if (this.editMode == true) {
-                this.formpermission.put(route('permission.update', this.objpermission.id), {
+                this.formhirarki.put(route('permission.update', this.objpermission.id), {
                     preserveScroll: true,
                     preserveState: true,
                     onSuccess: () => {
                         this.showModal = !this.showModal;
                         this.objpermission = null;
-                        this.formpermission.reset();
+                        this.formhirarki.reset();
                         // this.pagings(this.path+'?page='+this.halaman);
                     }
                 })
 
             } else {
-                this.formpermission.post(route('permission.store'), {
+                this.formhirarki.post(route('permission.store'), {
                     preserveScroll: true,
                     preserveState: true,
                     onSuccess: () => {
                         this.showModal = !this.showModal;
                         this.objpermission = null;
-                        this.formpermission.reset();
+                        this.formhirarki.reset();
                     },
                 })
             }
 
         },
         hapus(){
-            this.formpermission.delete(route('permission.destroy', this.objpermission.id), {
+            this.formhirarki.delete(route('permission.destroy', this.objpermission.id), {
                 preserveScroll: true,
                 preserveState: true,
                 onSuccess: () => {
@@ -343,3 +378,4 @@ export default {
     
 };
 </script>
+<style src="@vueform/multiselect/themes/default.css"></style>

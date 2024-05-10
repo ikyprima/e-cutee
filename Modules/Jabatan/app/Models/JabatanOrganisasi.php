@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Jabatan\Database\Factories\JabatanOrganisasiFactory;
 
-class jabatanOrganisasi extends Model
+class JabatanOrganisasi extends Model
 {
     use HasFactory;
 

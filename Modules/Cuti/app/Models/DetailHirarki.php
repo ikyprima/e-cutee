@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Cuti\Database\Factories\DetailHirarkiFactory;
 use Modules\Pegawai\Models\PegawaiHasJabatan;
+use Modules\Pegawai\Models\Pegawai;
 
 class DetailHirarki extends Model
 {
@@ -23,5 +24,8 @@ class DetailHirarki extends Model
     }
     public function pegawaiByJabatan(){
         return $this->hasOne(PegawaiHasJabatan::class,'id_jabatan','id_jabatan');
+    }
+    public function pegawai(){
+        return $this->hasOne(Pegawai::class,'id','id_pegawai');
     }
 }

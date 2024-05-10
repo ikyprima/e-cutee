@@ -30,34 +30,23 @@
         href="javascript:void(0);"
         class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
       >
-        Action
+        Profile
       </a>
-      <a
-        href="javascript:void(0);"
-        class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-      >
-        Another action
-      </a>
-      <a
-        href="javascript:void(0);"
-        class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-      >
-        Something else hereaaaaa
-      </a>
+      
       <div class="h-0 my-2 border border-solid border-blueGray-100" />
-      <a
-        href="javascript:void(0);"
-        class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-      >
-        Seprated link
-      </a>
+    
+      <Link :href="route('logout')" method="post" as="button"
+        class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+        Logout
+      </Link>
+    
     </div>
   </div>
 </template>
 
 <script>
 import { createPopper } from "@popperjs/core";
-
+import { Link } from '@inertiajs/vue3';
 import image from "@/img/team-1-800x800.jpg";
 
 export default {
@@ -67,6 +56,7 @@ export default {
       image: image,
     };
   },
+  components: {Link},
   methods: {
     toggleDropdown: function (event) {
       event.preventDefault();

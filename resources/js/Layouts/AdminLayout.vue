@@ -5,7 +5,7 @@
       <v-app-bar>
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
   
-        <v-app-bar-title>Application</v-app-bar-title>
+        <v-app-bar-title>E-Cuti</v-app-bar-title>
       </v-app-bar>
   
       <v-navigation-drawer
@@ -18,10 +18,11 @@
       >
       <v-list>
           <v-list-item
-            prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-            subtitle="sandra_a88@gmailcom"
-            title="Sandra Adams"
-          ></v-list-item>
+            :prepend-avatar="image"
+            :subtitle="$page.props.auth.user.username"
+            :title="$page.props.auth.user.name"
+          >
+        </v-list-item>
         </v-list>
         <v-divider></v-divider>
         <v-list density="compact" nav>
@@ -32,7 +33,7 @@
         <template v-slot:append >
           <div class="pa-2">
             <v-slide-x-reverse-transition leave-absolute>
-                <v-btn block prepend-icon="mdi-logout" variant="outlined"  v-if="!statRail">
+                <v-btn  @click="logout()" block prepend-icon="mdi-logout" variant="outlined"  v-if="!statRail">
                 Logout
             </v-btn>
             <v-btn icon="mdi-account-lock" size="small" variant="outlined" v-else>
@@ -54,13 +55,16 @@
     import { ref } from 'vue'
     import 'vuetify/styles'
     import { router } from '@inertiajs/vue3';
+    import image from "@/img/bootstrap.jpg";
+    
     const drawer = ref(null)
   </script>
   
   <script>
     export default {
       data: () => ({ drawer: null,
-        statRail:true
+        statRail:true,
+        image : image
         }),
       methods: {
         updateRail(v) {
@@ -73,7 +77,18 @@
               preserveScroll: true,
               preserveState: true  
           })
-        }   
+        },   
+        logout() {
+
+        router.post(route('logout'), {},
+          {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+            },
+          }
+        )
+},
 
       },
     }

@@ -3,5 +3,6 @@
     "Pegawai": true,
     "User": true,
     "Role": true,
-    "Permission": true
+    "Permission": true,
+    "HirarkiCuti": true
 }

@@ -43,6 +43,26 @@
                     }} </span>
                   </th>
                 </template>
+                <template v-else-if="datax.type == 'timeline'">
+                  <th
+                    class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center"
+                    :class="['text-' + datax.align, 'w-' + datax.size]">
+                  
+                    <ol class="relative border-s border-gray-200 dark:border-gray-700">                  
+                        <li v-for="(timeline, index) in data['detail'] " class="ms-6" 
+                        :class="(index === data['detail'].length - 1) ? '' : 'mb-12'">            
+                            <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                                <img class="rounded-full shadow-lg" src="/docs/images/people/profile-picture-3.jpg" @error="$event.target.src = image" alt="Bonnie image"/>
+                            </span>
+                            <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900 dark:text-white">{{ timeline['header'] }}<span class="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300 ms-3">{{ timeline['badge'] }}</span></h3>
+                            <time class="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{{ timeline['subheader'] }}</time>
+                            
+                        </li>
+                    </ol>
+
+
+                  </th>
+                </template>
                 <template v-else>
                   <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-s text-slate-500 whitespace-nowrap p-2 "
                     :class="['text-' + datax.align, 'w-' + datax.size]">

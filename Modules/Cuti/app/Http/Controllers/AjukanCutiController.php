@@ -145,27 +145,7 @@ class AjukanCutiController extends Controller
     }
 
     public function ajukanCuti(Request $request){
-        // $idUser = 1;
-        // $dataInfo = PegawaiHasUser::with('pegawai')->where('id_user',$idUser)->first();
-        // $pegawai = collect($dataInfo->pegawai);
-        // $jabatan = collect($dataInfo->pegawai->hasJabatan->jabatan);
-        // $hirarki = collect($dataInfo->pegawai->hasHirarki->hirarki);
-        // $detailHirarki = collect($dataInfo->pegawai->hasHirarki->hirarki->detailHirarki)->map(function($item){
-
-        //     return [
-        //         "id"=> $item['id'],
-        //         "id_hirarki"=> $item['id_hirarki'],
-        //         "urutan"=> $item['urutan'],
-        //         "id_jabatan"=> $item['id_jabatan'] ,
-        //         "deleted_at"=> $item['deleted_at'] ,
-        //         "created_at"=> $item['created_at'] ,
-        //         "updated_at"=> $item['updated_at'],
-        //         "id_pegawai"=>$item->pegawaiByJabatan?$item->pegawaiByJabatan->id_pegawai:null
-        //     ];
-        // });
-        // $pegawai['jabatan']= $jabatan;
-        // $pegawai['hirarki']= $hirarki;
-        // $pegawai['hirarki']['detail']= $detailHirarki;
+        
         return Inertia::render('Cuti/AjukanCuti');
     }
 }

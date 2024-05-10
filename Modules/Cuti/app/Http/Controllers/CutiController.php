@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
 use Modules\Cuti\Models\AjukanCuti;
-
+use Modules\Pegawai\Models\Pegawai;
+use Illuminate\Support\Facades\Auth;
 class CutiController extends Controller
 {
     /**
@@ -16,7 +17,9 @@ class CutiController extends Controller
      */
     public function index()
     {
-        $id_pegawai = 1;
+    
+        $pegawai = Pegawai::where('nomor_induk_pegawai',Auth::user()->username)->first();
+        $id_pegawai =  $pegawai->id;
         $dataCuti = AjukanCuti::with('jenisCuti')->where('id_pegawai',$id_pegawai)->with('detailTanggal','detailPersetujuan.pegawai')->paginate(10);
         
         return Inertia::render('Cuti/Index',[

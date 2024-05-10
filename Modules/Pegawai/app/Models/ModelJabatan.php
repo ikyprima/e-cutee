@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Pegawai\Database\Factories\ModelJabatanFactory;
 
-class modelJabatan extends Model
+class ModelJabatan extends Model
 {
     use HasFactory;
 
