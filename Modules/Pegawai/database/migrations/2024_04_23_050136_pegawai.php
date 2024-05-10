@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('nomor_induk_pegawai');
             $table->string('nama');
-            $table->string('gelar_depan', 100);
-            $table->string('gelar_belakang', 100);
-            $table->text('tempat_lahir');
-            $table->date('tgl_lahir');
-            $table->string('photo');
+            $table->string('gelar_depan', 100)->nullable();
+            $table->string('gelar_belakang', 100)->nullable();
+            $table->text('tempat_lahir')->nullable();
+            $table->date('tgl_lahir')->nullable();
+            $table->string('photo')->nullable();
             $table->bigInteger('id_jenis_kelamin');
             $table->bigInteger('id_user_create');
             $table->softDeletes($column = 'deleted_at', $precision = 0);

@@ -52,12 +52,12 @@
         <form class="mt-6 mb-4 md:hidden">
           <div class="mb-3 pt-0">
             <input type="text" placeholder="Search" :id="'cari-sidebar'"
-              class="border-0 px-3 py-2 h-12 border border-solid border-blueGray-500 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-base leading-snug shadow-none outline-none focus:outline-none w-full font-normal" />
+              class="px-3 py-2 h-12 border border-solid border-blueGray-500 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-base leading-snug shadow-none outline-none focus:outline-none w-full font-normal" />
           </div>
         </form>
         <!-- Divider -->
         <div v-for="(data, index) in $page.props.menu">
-
+        
 
           <hr class="my-4 md:min-w-full" />
           <!-- Heading -->
@@ -68,9 +68,9 @@
           <!-- <ul class="md:flex-col md:min-w-full flex flex-col list-none">
             <li class="items-center">
 
-              <SidebarLink v-for="( data, index ) in data.menu" :key="data.id" :href="route().has(data.name_route)?route(data.name_route):''"
-                :active="route().current(data.name_route)" :icon="'fas fa-tv mr-2 text-sm'">
-                {{ data.title }}
+              <SidebarLink v-for="( data, index ) in data.menu" :key="data.id" :href="route().has(data.url)?route(data.url):''"
+                :active="route().current(data.url)" :icon="'fas fa-tv mr-2 text-sm'">
+                {{ data.name }}
 
               </SidebarLink>
 

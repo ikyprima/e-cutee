@@ -14,7 +14,14 @@ use Inertia\Response;
 class ProfileController extends Controller
 {
     public function admin(Request $request){
-        return Inertia::render('Admin/index');
+        
+        if( Auth::user()->hasRole('admin')){
+            return Inertia::render('Admin/index-admin');
+        
+        }else{
+            return Inertia::render('Admin/index');
+        }   
+
     }
     /**
      * Display the user's profile form.

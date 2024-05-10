@@ -29,11 +29,66 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $menuDashboard = collect([
+            [
+            'id_header' => 0,
+            "header"=> "Home",
+            "order"=> 0,
+            "menu" => array(
+                [
+                    "id"=> 1,
+                    "title"=> "Dashboard",
+                    "url"=> "dashboard",
+                    "name_route"=> "admin",
+                    "icon"=> null,
+                    'children'=>[]
+
+                ],
+            )
+                ],
+                [
+                    'id_header' => 0,
+                    "header"=> "Manajemen",
+                    "order"=> 0,
+                    "menu" => array(
+                        [
+                            "id"=> 1,
+                            "title"=> "User",
+                            "url"=> "user",
+                            "name_route"=> "user.index",
+                            "icon"=> null,
+                            'children'=>[]
+        
+                        ],
+                        [
+                            "id"=> 2,
+                            "title"=> "role",
+                            "url"=> "role",
+                            "name_route"=> "role.index",
+                            "icon"=> null,
+                            'children'=>[]
+        
+                        ],
+                        [
+                            "id"=> 2,
+                            "title"=> "permission",
+                            "url"=> "permission",
+                            "name_route"=> "permission.index",
+                            "icon"=> null,
+                            'children'=>[]
+        
+                        ]
+                    )
+                    ]
+            ]
+
+        );
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
             ],
+            'menu' => $menuDashboard,
         ];
     }
 }

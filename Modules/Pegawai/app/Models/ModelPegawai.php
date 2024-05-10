@@ -16,7 +16,7 @@ class modelPegawai extends Model
      * The attributes that are mass assignable.
      */
     protected $table = 'tb_pegawai';
-    protected $fillable = [];
+    protected $fillable = ['id_jabatan_organisasi','nomor_induk_pegawai','nama','tgl_lahir','id_jenis_kelamin','id_user_create'];
 
     protected static function newFactory(): ModelPegawaiFactory
     {

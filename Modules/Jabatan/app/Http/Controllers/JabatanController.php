@@ -1,25 +1,20 @@
 <?php
 
-namespace Modules\Pegawai\Http\Controllers;
+namespace Modules\Jabatan\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Modules\Pegawai\Models\ModelPegawai;
 
-use  App\Models\User;
-class PegawaiController extends Controller
+class JabatanController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-      
-        
-        // return ModelPegawai::with('pegawai.pegawai')->get();
-        return view('pegawai::index');
+        return view('jabatan::index');
     }
 
     /**
@@ -27,7 +22,7 @@ class PegawaiController extends Controller
      */
     public function create()
     {
-        return view('pegawai::create');
+        return view('jabatan::create');
     }
 
     /**
@@ -43,7 +38,7 @@ class PegawaiController extends Controller
      */
     public function show($id)
     {
-        return view('pegawai::show');
+        return view('jabatan::show');
     }
 
     /**
@@ -51,7 +46,7 @@ class PegawaiController extends Controller
      */
     public function edit($id)
     {
-        return view('pegawai::edit');
+        return view('jabatan::edit');
     }
 
     /**
