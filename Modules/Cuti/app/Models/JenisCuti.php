@@ -14,7 +14,7 @@ class JenisCuti extends Model
      * The attributes that are mass assignable.
      */
     protected $table = 'tb_jenis_cuti';
-    protected $fillable = [];
+    protected $fillable = ['jenis_cuti'];
 
     protected static function newFactory(): JenisCutiFactory
     {

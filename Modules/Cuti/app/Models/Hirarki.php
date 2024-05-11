@@ -15,7 +15,7 @@ class Hirarki extends Model
      * The attributes that are mass assignable.
      */
     protected $table = 'tb_cuti_hirarki';
-    protected $fillable = [];
+    protected $fillable = ['nama_hirarki'];
 
     protected static function newFactory(): HirarkiFactory
     {

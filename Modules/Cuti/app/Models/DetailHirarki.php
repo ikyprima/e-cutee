@@ -16,7 +16,7 @@ class DetailHirarki extends Model
      * The attributes that are mass assignable.
      */
     protected $table ='tb_cuti_det_hirarki';
-    protected $fillable = [];
+    protected $fillable = ['id_hirarki','urutan','id_jabatan','id_pegawai'];
 
     protected static function newFactory(): DetailHirarkiFactory
     {

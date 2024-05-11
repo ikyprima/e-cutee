@@ -14,7 +14,7 @@ class HirarkiHasPegawai extends Model
      * The attributes that are mass assignable.
      */
     protected $table = 'tb_cuti_hirarki_has_pegawai';
-    protected $fillable = [];
+    protected $fillable = ['id_hirarki','id_pegawai'];
 
     protected static function newFactory(): HirarkiHasPegawaiFactory
     {

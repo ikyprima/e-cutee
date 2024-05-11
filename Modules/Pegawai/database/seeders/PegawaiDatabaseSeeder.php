@@ -510,6 +510,17 @@ class PegawaiDatabaseSeeder extends Seeder
         $role = Role::firstOrCreate([
             'name' => 'pegawai'
         ]);
+        $roleadmin = Role::firstOrCreate([
+            'name' => 'admin'
+        ]);
+        $user = User::firstOrCreate([
+            'username' => 'admin',
+            ],[
+            'name'	=> 'Admin',
+            'email'	=> 'adminsuper@sumbarprov.go.id',
+            'password'	=> bcrypt('admin123')
+        ]);
+        $user->assignRole($roleadmin->name);
         foreach ($pegawai as $key => $value) {
             $user = User::firstOrCreate([
                 'username' => $value['nomor_induk_pegawai'],
