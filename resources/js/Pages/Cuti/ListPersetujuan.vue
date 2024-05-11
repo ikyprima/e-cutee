@@ -40,7 +40,7 @@ import { router } from '@inertiajs/vue3';
                     <v-row align="center" no-gutters>
                       <v-col class="text-h2 text-center pt-4">
 
-                        <v-avatar image="https://randomuser.me/api/portraits/women/85.jpg" size="120"></v-avatar>
+                        <v-avatar :image="image" size="120"></v-avatar>
                       </v-col>
 
 
@@ -283,6 +283,7 @@ import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import image from "@/img/bootstrap.jpg";
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 export default {
   props: {
@@ -297,6 +298,7 @@ export default {
   // }),
   data() {
     return {
+      image:image,
       konfirmasi: false,
       dialog: false,
       objRow: null,

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Pegawai\Database\Factories\PegawaiFactory;
 use Modules\Jabatan\Models\JabatanOrganisasi;
+use Modules\Cuti\Models\HirarkiHasPegawai;
 class Pegawai extends Model
 {
     use HasFactory;
@@ -23,5 +24,8 @@ class Pegawai extends Model
 
     function jabatanOrganisasi(){
         return $this->hasOne(JabatanOrganisasi::class,'id','id_jabatan_organisasi');
+    }
+    public function hasHirarki(){
+        return $this->hasOne(HirarkiHasPegawai::class,'id_pegawai','id');
     }
 }

@@ -10,10 +10,11 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Redirect;
 use Modules\Pegawai\Models\PegawaiHasUser;
+use Modules\Pegawai\Models\Pegawai;
 use Modules\Cuti\Models\AjukanCuti;
 use Modules\Cuti\Models\AjukanCutiPersetujuan;
 use Modules\Cuti\Models\AjukanCutiTanggal;
-
+use Auth;
 use Validator;
 class AjukanCutiController extends Controller
 {
@@ -22,7 +23,8 @@ class AjukanCutiController extends Controller
      */
     public function index()
     {
-        return view('cuti::index');
+    
+
     }
 
     /**
@@ -39,12 +41,36 @@ class AjukanCutiController extends Controller
     public function store(Request $request)
     {
         
-        $idUser = 1;
-        $dataInfo = PegawaiHasUser::with('pegawai')->where('id_user',$idUser)->first();
-        $pegawai = collect($dataInfo->pegawai);
-        $jabatan = collect($dataInfo->pegawai->hasJabatan->jabatan);
-        $hirarki = collect($dataInfo->pegawai->hasHirarki->hirarki);
-        $detailHirarki = collect($dataInfo->pegawai->hasHirarki->hirarki->detailHirarki)->map(function($item){
+        // $idUser = 1;
+        // $dataInfo = PegawaiHasUser::with('pegawai')->where('id_user',$idUser)->first();
+        // $pegawai = collect($dataInfo->pegawai);
+        // $jabatan = collect($dataInfo->pegawai->hasJabatan->jabatan);
+        // $hirarki = collect($dataInfo->pegawai->hasHirarki->hirarki);
+
+        // $detailHirarki = collect($dataInfo->pegawai->hasHirarki->hirarki->detailHirarki)->map(function($item){
+
+        //     return [
+        //         "id"=> $item['id'],
+        //         "id_hirarki"=> $item['id_hirarki'],
+        //         "urutan"=> $item['urutan'],
+        //         "id_jabatan"=> $item['id_jabatan'] ,
+        //         "deleted_at"=> $item['deleted_at'] ,
+        //         "created_at"=> $item['created_at'] ,
+        //         "updated_at"=> $item['updated_at'],
+        //         "id_pegawai"=>$item->pegawaiByJabatan?$item->pegawaiByJabatan->id_pegawai:null
+        //     ];
+        // });
+
+
+        // $pegawai['jabatan']= $jabatan;
+        // $pegawai['hirarki']= $hirarki;
+        // $pegawai['hirarki']['detail']= $detailHirarki;
+
+        $pegawai = Pegawai::with(['jabatanOrganisasi','hasHirarki.hirarki.detailHirarki'])->where('nomor_induk_pegawai',Auth::user()->username)->first();
+        $jabatan =  collect($pegawai->jabatanOrganisasi);
+        $hirarki = collect($pegawai->hasHirarki->hirarki);
+
+        $detailHirarki = collect($pegawai->hasHirarki->hirarki->detailHirarki)->map(function($item){
 
             return [
                 "id"=> $item['id'],
@@ -54,13 +80,14 @@ class AjukanCutiController extends Controller
                 "deleted_at"=> $item['deleted_at'] ,
                 "created_at"=> $item['created_at'] ,
                 "updated_at"=> $item['updated_at'],
-                "id_pegawai"=>$item->pegawaiByJabatan?$item->pegawaiByJabatan->id_pegawai:null
+                "id_pegawai"=> $item['id_pegawai'],
+                "id_pegawai_dari_jabatan"=>$item->pegawaiByJabatan?$item->pegawaiByJabatan->id_pegawai:null
             ];
         });
+
         $pegawai['jabatan']= $jabatan;
         $pegawai['hirarki']= $hirarki;
         $pegawai['hirarki']['detail']= $detailHirarki;
-    
 
         try {
             //insert ke table ajukan cuti
