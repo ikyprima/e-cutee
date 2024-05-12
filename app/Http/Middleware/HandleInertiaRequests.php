@@ -82,7 +82,7 @@ class HandleInertiaRequests extends Middleware
                             "id"=> 4,
                             "title"=> "Rekap Cuti",
                             "url"=> "rekap-cuti",
-                            "name_route"=> "rekap.cuti.index",
+                            "name_route"=> "admin-rekap-cuti",
                             "icon"=> null,
                             'children'=>[]
         

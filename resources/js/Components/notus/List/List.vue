@@ -7,7 +7,7 @@
               :class="{'bg-red-500': highlight, 'bg-white': !highlight}" 
              >
             <div class="flex-1 pl-1">
-                <div class="font-medium text-blueGray-700 w-64 uppercase" :class="[`translate-x-[${this.depth}rem]`]">
+                <div class="font-medium text-blueGray-700 w-64 uppercase" >
                     <i
                         :class="[item.children.length > 0 ? 'fas fa-folder-open opacity-75' : ' fas fa-file text-blueGray-300']">
                     </i>

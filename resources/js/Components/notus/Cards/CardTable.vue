@@ -19,12 +19,13 @@
         <thead>
           <tr>
             <th v-for="(data, index) in header"
-              class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
+              class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0  font-semibold text-left"
               :class="[
                 color === 'light'
                   ? 'bg-blueGray-50 text-blueblue-300 border-blueGray-100'
                   : 'bg-emerald-800 text-emerald-300 border-emerald-700',
-                'text-' + data.align
+                'text-' + data.align,
+                'w-' + data.size
               ]">
               {{ data.title }}
             </th>
@@ -63,9 +64,32 @@
 
                   </th>
                 </template>
+                <template v-else-if="datax.type == 'button-group'">
+                  <td
+                  class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-s text-slate-500 whitespace-nowrap p-2"
+                  :class="['text-' + datax.align, 'w-' + datax.size]">
+                  <div class=" inline-flex " role="group">
+                    <template v-for="(item, index) in datax.data">
+                      
+                      <button 
+                        type="button"
+                        class="inline-flex items-center px-4 py-2 text-sm font-medium shadow-md text-grey-700 bg-transparent  transition ease-in-out duration-150" 
+                        v-on:click="klik(data,item.action)"
+                        :class="item.class">
+                        <span>
+                          <i :class="item.icon"></i>
+                          {{ item.text }}
+                        </span>
+                      </button>
+                      
+                    </template>
+                  </div>
+                  
+                  </td>
+                </template>
                 <template v-else>
                   <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-s text-slate-500 whitespace-nowrap p-2 "
-                    :class="['text-' + datax.align, 'w-' + datax.size]">
+                    :class="['text-' + datax.align, 'w-' + datax.size, datax.class]">
                     <div v-if="datax.type == 'string'">
                       {{ data[datax.field] ? data[datax.field] : '-' }}
                     </div>
@@ -118,7 +142,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import image from "@/img/no-image.png";
 export default {
 
-
+  emits: ['klik'],
   data() {
 
     return {
