@@ -80,14 +80,31 @@ class HandleInertiaRequests extends Middleware
                         ],
                         [
                             "id"=> 4,
+                            "title"=> "Set Alur Pegawai",
+                            "url"=> "list-pengajuan-cuti",
+                            "name_route"=> "admin-set-alur-cuti-pegawai",
+                            "icon"=> null,
+                            'children'=>[]
+        
+                        ],
+                        [
+                            "id"=> 5,
                             "title"=> "Rekap Cuti",
                             "url"=> "rekap-cuti",
                             "name_route"=> "admin-rekap-cuti",
                             "icon"=> null,
                             'children'=>[]
         
+                        ],
+                        [
+                            "id"=> 6,
+                            "title"=> "List Pengajuan Cuti",
+                            "url"=> "list-pengajuan-cuti",
+                            "name_route"=> "admin-list-pengajuan-cuti",
+                            "icon"=> null,
+                            'children'=>[]
+        
                         ]
-                        
                     )
                 ],
                 [

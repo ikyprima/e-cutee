@@ -87,6 +87,16 @@
                   
                   </td>
                 </template>
+                <template v-else-if="datax.type == 'object'">
+                  <td
+                  class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-s text-slate-500 whitespace-nowrap p-2"
+                  :class="['text-' + datax.align, 'w-' + datax.size]">
+                    
+                    
+                    <p class="font-bold">{{ data[datax.field]['header'] ? data[datax.field]['header'] : '-' }}</p>
+                    <p class="text-xs">{{ data[datax.field]['subheader'] ? data[datax.field]['subheader'] : '-' }}</p>
+                  </td>
+                </template>
                 <template v-else>
                   <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-s text-slate-500 whitespace-nowrap p-2 "
                     :class="['text-' + datax.align, 'w-' + datax.size, datax.class]">

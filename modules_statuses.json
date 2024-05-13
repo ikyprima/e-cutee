@@ -4,5 +4,6 @@
     "User": true,
     "Role": true,
     "Permission": true,
-    "HirarkiCuti": true
+    "HirarkiCuti": true,
+    "Jabatan": true
 }

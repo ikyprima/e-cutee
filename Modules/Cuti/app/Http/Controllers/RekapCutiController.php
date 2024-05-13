@@ -26,6 +26,10 @@ class RekapCutiController extends Controller
             $data = collect( [
                 'nip'=>$item->nomor_induk_pegawai,
                 'nama'=>$item->nama,
+                'detail'=>[
+                    'header'=>$item->nama,
+                    'subheader'=>$item->nomor_induk_pegawai,
+                ]
             ]);
 
             foreach ($master as $key => $value) {
