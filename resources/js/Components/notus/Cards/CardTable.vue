@@ -91,12 +91,33 @@
                   <td
                   class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-s text-slate-500 whitespace-nowrap p-2"
                   :class="['text-' + datax.align, 'w-' + datax.size]">
-                    
-                    
-                    <p class="font-bold">{{ data[datax.field]['header'] ? data[datax.field]['header'] : '-' }}</p>
-                    <p class="text-xs">{{ data[datax.field]['subheader'] ? data[datax.field]['subheader'] : '-' }}</p>
+                      
+                      <template v-if="datax.subfield">
+                        <div v-for="(item, index) in datax.subfield">
+                          <p :class="[item.class]">{{ data[datax.field][item.field] ? data[datax.field][item.field] : '-' }}</p>
+                        </div>
+                      </template>
+                      <template v-else>
+                        <div>
+                          <p class="font-bold">{{ data[datax.field]['header'] ? data[datax.field]['header'] : '-' }}</p>
+                          <p class="text-xs">{{ data[datax.field]['subheader'] ? data[datax.field]['subheader'] : '-' }}</p>
+                        </div>
+                      </template>
                   </td>
                 </template>
+                <template v-else-if="datax.type == 'badge'">
+                  <td
+                  class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-s text-slate-500 whitespace-nowrap p-2"
+                  :class="['text-' + datax.align, 'w-' + datax.size]">
+                    <div v-for="(item, index) in datax.subfield">
+                      <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full last:mr-0 mr-1" :class="[data[datax.field][item.class]]">
+                      {{ data[datax.field][item.field] ? data[datax.field][item.field] : '-' }}
+                      </span>
+                    </div>
+                
+                  </td>
+                </template>
+                
                 <template v-else>
                   <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-s text-slate-500 whitespace-nowrap p-2 "
                     :class="['text-' + datax.align, 'w-' + datax.size, datax.class]">

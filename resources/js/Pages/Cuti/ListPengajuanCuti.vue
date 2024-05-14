@@ -42,7 +42,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
         <div class="flex flex-wrap mt-4">
             <div class="w-full mb-12 px-4">
 
-                <card-table @clickedit="clickedit" :list=rekapcuti.data :header=setting namaTitle='LIST REKAP CUTI PEGAWAI'> 
+                <card-table @clickedit="clickedit" :list=dataCuti.data :header=setting namaTitle='LIST REKAP CUTI PEGAWAI'> 
                     <template #button>
                         
                         
@@ -51,7 +51,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
                 <footer class="px-2 py-4 border-t border-gray-100 bg ">
                     <nav aria-label="Page navigation example ">
                         <ul class="flex list-style-none ">
-                            <li class="page-item" v-for="paging in rekapcuti?rekapcuti.links:[]" :key="paging.id">
+                            <li class="page-item" v-for="paging in dataCuti?dataCuti.links:[]" :key="paging.id">
                                 <div v-if="paging.active == false && paging.url == null">
                                     <a class="
                                     page-link
@@ -176,7 +176,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
 export default {
     
     props: {
-        rekapcuti: Object,
+        dataCuti: Object,
 
     },
     data() {
@@ -187,63 +187,73 @@ export default {
             setting: [ //seting header table
                 {
                     title: 'Nama',
-                    field: 'detail',
+                    field: 'pegawai',
+                    subfield : [
+                        {
+                            field : 'nama',
+                            class : 'font-bold'
+                        },
+                        {
+                            field : 'nomor_induk_pegawai',
+                            class : 'text-xs'
+                        }
+                    ],
                     type: 'object',
                     size: 'auto',
                     align: 'left'
                 },
                 {
-                    title: 'Cuti Besar',
-                    field: 'cuti_besar',
-                    type: 'string',
-                    size: '20',
-                    align: 'center',
-                    class: 'bg-blueGray-100'
-                },
-                {
-                    title: 'CLTN',
-                    field: 'cuti_diluar_tanggungan_negara',
-                    type: 'string',
-                    size: '20',
-                    align: 'center',
-                    class: ''
-                },
-                
-                {
-                    title: 'Cuti Alasan Penting',
-                    field: 'cuti_karena_alasan_penting',
-                    type: 'string',
-                    size: '20',
-                    align: 'center',
-                    class: 'bg-blueGray-100'
-                },
-                {
-                    title: 'Cuti Melahirkan',
-                    field: 'cuti_melahirkan',
-                    type: 'string',
-                    size: '20',
-                    align: 'center',
+                    title: 'Jenis Cuti',
+                    field: 'jenis_cuti',
+                    subfield : [
+                        {
+                            field : 'jenis_cuti',
+                            class : ''
+                        },
+                    ],
+                    type: 'object',
+                    size: 'auto',
+                    align: 'left',
                     class: ''
                 },
                 {
-                    title: 'Cuti Sakit',
-                    field: 'cuti_sakit',
+                    title: 'Alasan Cuti',
+                    field: 'alasan_cuti',
                     type: 'string',
-                    size: '20',
-                    align: 'center',
-                    class: 'bg-blueGray-100'
+                    size: 'auto',
+                    align: 'left',
+                    class: ''
                 },
                 {
-                    title: 'Cuti Tahunan',
-                    field: 'cuti_tahunan',
+                    title: 'Alamat Selama Cuti',
+                    field: 'alamat',
                     type: 'string',
-                    size: '20',
-                    align: 'center'
+                    size: 'auto',
+                    align: 'left',
+                    class: ''
                 },
-                
-               
-
-
+                {
+                    title: 'Telp Selama Cuti',
+                    field: 'telp',
+                    type: 'string',
+                    size: 'auto',
+                    align: 'left',
+                    class: ''
+                },
+                {
+                    title: 'Status',
+                    field: 'stringstat',
+                    subfield : [
+                        {
+                            field : 'nama',
+                            class : 'class'
+                        },
+                    ],
+                    type: 'badge',
+                    size: 'auto',
+                    align: 'left',
+                    class: ''
+                },
             ],
 
             

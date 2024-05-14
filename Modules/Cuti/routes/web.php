@@ -28,6 +28,7 @@ Route::group([], function () {
     });
 
     Route::get('/rekap-cuti', [RekapCutiController::class, 'index'])->name('admin-rekap-cuti');
+    Route::get('/list-pengajuan-cuti', [CutiController::class, 'index'])->name('admin-list-pengajuan-cuti');
 
     
 });
