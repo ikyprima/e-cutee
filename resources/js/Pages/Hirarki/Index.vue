@@ -166,13 +166,14 @@ import Dialog from '@/Components/notus/Dialog.vue';
                                 <div class="relative   ">
                                     <InputLabel value="Nama Pegawai" />
                                     <div class="mt-1 block w-full">
-                                        <Multiselect  v-model="formhirarki.detail[index]['id_pegawai']"
+                                        <!-- v-model="formhirarki.detail[index]['id_pegawai']" -->
+                                        <!-- @deselect="(selectedValue) => hapusdetail(selectedValue, index)" -->
+                                        <Multiselect 
                                             v-bind="optionPegawaiSelect"
-
-                                            @clear="(val) => "
                                             @select="(val) => pilihpegawai(val, index) "
-                                            @deselect="(val) => "
-                                            />
+                                            @clear="() => hapusdetail(index)"
+                                           
+                                        
                                         />
                                     </div>
                                     <p v-if="$page.props.errors['detail.' + index + '.id_pegawai']"
@@ -264,7 +265,7 @@ export default {
     data() {
         return {
             optionPegawaiSelect: {
-                closeOnSelect: false,
+                closeOnSelect: true,
                 placeholder: 'pilih pegawai',
                 filterResults: false,
                 minChars: 0,
@@ -274,8 +275,9 @@ export default {
                 clearOnSearch: true,
                 delay: 0,
                 searchable: true,
+                canClear :  true,
                 options: async (query) => {
-                    return await this.cariPegawai(query)
+                    return await this.cariPegawai(query,this.formhirarki.detail)
                 }
                 
             },
@@ -326,8 +328,7 @@ export default {
         };
     },
     methods: {
-     
-        cariPegawai : async(query) => {
+        cariPegawai : async(query,arrdata) => {
             const url = route('api.pegawai.index', { searchall: query });
             try {
                 const response = await fetch(url);
@@ -335,17 +336,29 @@ export default {
                     throw new Error(`Network response was not ok: ${response.statusText} (Status: ${response.status})`);
                 }
                 const data = await response.json();
+
                 return data.map((item) => {
-                    return { value: item.id, label: item.nama }
+                    let pegawai = arrdata.find(items => items.id_pegawai == item.id);
+                    if(pegawai){
+                        return { value: item.id, label: item.nama, disabled: true }
+                    }else{
+                        return { value: item.id, label: item.nama }
+                    }
                 })
             } catch (error) {
                 console.error('There was a problem with the fetch operation:', error);
             }
         },
         pilihpegawai : function (value, i) {
-            console.log(value)
+            
+            let pegawai = this.formhirarki.detail.find(item => item.id_pegawai == value);
+            if (!pegawai) {
+                this.formhirarki.detail[i]['id_pegawai']= value;
+            }
         },
-
+        hapusdetail : function(i){
+            this.formhirarki.detail[i]['id_pegawai']='';
+        },
         tambahData() {
             this.editMode = false;
             this.objhirarki = null;
@@ -353,6 +366,7 @@ export default {
             this.formhirarki.reset()
             this.formhirarki.clearErrors()
         },
+
         closeModal(){
             this.editMode = false;
             this.showModal = !this.showModal;
@@ -371,7 +385,6 @@ export default {
             } else {
                 this.formhirarki.detail.splice(value, 1);
             }
-
         },
     },
 

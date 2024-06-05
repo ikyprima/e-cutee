@@ -23,9 +23,14 @@ class PegawaiController extends Controller
         $is_api_request = $request->route()->getPrefix() === 'api/v1';
         
             if($request->has('searchall')){
-                $pegawai = ModelPegawai::where('nomor_induk_pegawai', 'like', '%' . $request->searchall . '%')
-                ->orWhere('nama', 'like', '%' . $request->searchall . '%')
-                ->get();
+                if($request->searchall != ''){
+                    $pegawai = ModelPegawai::where('nomor_induk_pegawai', 'like', '%' . $request->searchall . '%')
+                    ->orWhere('nama', 'like', '%' . $request->searchall . '%')
+                    ->get();
+                }else{
+                    $pegawai = [];
+                }
+            
             }elseif($request->has('search')) {
                 # code...
                 $pegawai = ModelPegawai::where('nomor_induk_pegawai', 'like', '%' . $request->search . '%')
