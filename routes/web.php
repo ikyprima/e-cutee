@@ -19,7 +19,9 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+
+    // return Inertia::render('Dashboard');
+    return redirect(route('admin', absolute: false));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/admin', [ProfileController::class, 'admin'])->middleware(['auth', 'verified'])->name('admin');

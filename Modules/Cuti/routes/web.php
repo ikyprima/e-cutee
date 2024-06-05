@@ -17,6 +17,11 @@ use Modules\Cuti\Http\Controllers\RekapCutiController;
 */
 
 Route::group([], function () {
+
+});
+
+
+Route::middleware('auth')->group(function () {
     Route::prefix('admin')->group(function() {
         Route::get('/cuti', [CutiController::class, 'index'])->name('admin-index-cuti');
         Route::get('/cuti/ajukan', [AjukanCutiController::class, 'AjukanCuti'])->name('admin-ajukan-cuti');
@@ -29,6 +34,4 @@ Route::group([], function () {
 
     Route::get('/rekap-cuti', [RekapCutiController::class, 'index'])->name('admin-rekap-cuti');
     Route::get('/list-pengajuan-cuti', [CutiController::class, 'index'])->name('admin-list-pengajuan-cuti');
-
-    
 });

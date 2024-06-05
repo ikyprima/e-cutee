@@ -18,6 +18,7 @@ return new class extends Migration
             $table->char('status', 1)->default(0); // setujui atau tolak
             $table->char('aktif', 1)->default(0); // aktif posisi persetujuan saat ini
             $table->bigInteger('id_pegawai')->nullable();
+            $table->text('alasan_tolak')->nullable();
             $table->softDeletes($column = 'deleted_at', $precision = 0);
             $table->timestamps();
         });

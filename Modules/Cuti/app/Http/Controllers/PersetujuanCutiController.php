@@ -23,8 +23,8 @@ class PersetujuanCutiController extends Controller
         $id_pegawai =  $pegawai->id;
         $dataCuti = AjukanCutiPersetujuan::where([['id_pegawai',$id_pegawai],['aktif',1]])
         ->with('masterajukancuti.pegawai.hasJabatan.jabatan')
-        ->get()
-        ->map(function($item){
+        ->paginate(10)
+        ->through(function($item){
             $tanggal = $item->masterajukancuti->detailTanggal->map(function($item){
                 return [
                 'title'=>$item->title,
@@ -39,11 +39,25 @@ class PersetujuanCutiController extends Controller
                     // 'jabatan'=>$item->pegawai?$item->pegawai->hasJabatan->jabatan->nama_jabatan:null,
                     'jabatan'=>$item->pegawai->jabatanOrganisasi->nama_jabatan,
                     'status'=>$item->status,
+                    'alasan_tolak' => $item->alasan_tolak,
                     'aktif'=>$item->aktif,
                     'created_at'=>$item->created_at,
                     'updated_at'=>$item->updated_at,
                 ];
             });
+
+            if($item->masterajukancuti->status == 0){
+                $stat = 'Menunggu Persetujuan';
+                $class = 'text-blue-600 bg-blue-200';
+            }elseif($item->masterajukancuti->status == 1){
+                $stat = 'Disetujui';
+                $class = 'text-green-600 bg-green-200';
+            }
+            elseif($item->masterajukancuti->status == 2){
+                $stat = 'Ditolak';
+                $class = 'text-red-600 bg-red-200';
+            }
+        
             return [
                 'id'=>$item->id,
                 'id_detail_hirarki'=>$item->id_detail_hirarki,
@@ -51,18 +65,24 @@ class PersetujuanCutiController extends Controller
                 'nip'=>$item->masterajukancuti->pegawai->nomor_induk_pegawai,
                 'nama'=>$item->masterajukancuti->pegawai->nama,
                 // 'jabatan'=>$item->masterajukancuti->pegawai->hasJabatan->jabatan->nama_jabatan,
-                'jabatan'=>$item->pegawai->jabatanOrganisasi->nama_jabatan,
+                'jabatan'=>$item->masterajukancuti->pegawai->jabatanOrganisasi->nama_jabatan,
                 'jenis_cuti'=>$item->masterajukancuti->jenisCuti,
                 'alasan_cuti'=>$item->masterajukancuti->alasan_cuti,
                 'alamat'=>$item->masterajukancuti->alamat,
                 'telp'=> $item->masterajukancuti->telp,
                 'status_pengajuan'=> $item->masterajukancuti->status, //status dokumen pengajuan cuti
                 'status_persetujuan'=>$item->status, //status persetujuan per orang
+                'stringstat'=> [
+                    'nama'=>$stat,
+                    'kode'=> $item->status,
+                    'class'=> $class
+                ],
                 'tanggal_cuti'=>$tanggal,
                 'detail_persetujuan'=> $detPersetujuan
                 
             ];
         });
+        // return $dataCuti;
         //list pengajuan cuti
         return Inertia::render('Cuti/ListPersetujuan',[
             'dataCuti' => $dataCuti
@@ -82,7 +102,7 @@ class PersetujuanCutiController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->status === 0){
+        if($request->status === 2){
             //jika persetujuan ditolak
             AjukanCuti::where('id',$request->id_ajukan_cuti)->update(
                 [
@@ -91,10 +111,12 @@ class PersetujuanCutiController extends Controller
             );
             AjukanCutiPersetujuan::where('id', $request->id)->update(
                 [
-                    'status' => 2, //0 menunggu, 1 Disetujui, 2 Ditolak
+                    'status' => 2, //0 menunggu, 1 Disetujui, 2 Ditolak,
+                    'alasan_tolak'=>$request->alasan_tolak
                 ],
             );
-            return to_route('admin-persetujuan-cuti')->with(['message'=>'Sukses Simpan Data']);
+            // return to_route('admin-persetujuan-cuti')->with(['message'=>'Sukses Simpan Data']);
+            return back(303);
             
         }elseif($request->status === 1){
             //jika disetujui

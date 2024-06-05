@@ -46,7 +46,30 @@ class CutiController extends Controller
         }else{
             $pegawai = Pegawai::where('nomor_induk_pegawai',Auth::user()->username)->first();
             $id_pegawai =  $pegawai->id;
-            $dataCuti = AjukanCuti::with('jenisCuti')->where('id_pegawai',$id_pegawai)->with('detailTanggal','detailPersetujuan.pegawai')->paginate(10);
+            $dataCuti = AjukanCuti::with('jenisCuti')
+            ->where('id_pegawai',$id_pegawai)
+            ->with('pegawai.jabatanOrganisasi','detailTanggal','detailPersetujuan.pegawai')
+            ->paginate(10)
+            ->through(function($item){
+
+                    if($item->status == 0){
+                        $stat = 'Menunggu Persetujuan';
+                        $class = 'text-blue-600 bg-blue-200';
+                    }elseif($item->status == 1){
+                        $stat = 'Disetujui';
+                        $class = 'text-green-600 bg-green-200';
+                    }
+                    elseif($item->status == 2){
+                        $stat = 'Ditolak';
+                        $class = 'text-red-600 bg-red-200';
+                    }
+                    $item['stringstat'] =[
+                        'nama'=>$stat,
+                        'kode'=> $item->status,
+                        'class'=> $class
+                    ];
+                    return $item;
+                });
             
             return Inertia::render('Cuti/Index',[
                 'dataCuti' => $dataCuti

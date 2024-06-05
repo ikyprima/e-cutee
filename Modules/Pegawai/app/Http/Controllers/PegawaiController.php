@@ -18,14 +18,58 @@ class PegawaiController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request) 
     {
-      
+        $is_api_request = $request->route()->getPrefix() === 'api/v1';
         
-        $pegawai=ModelPegawai::paginate(10);
-        return Inertia::render('Pegawai/Index',[
-            'pegawai'=>$pegawai
-        ]);
+            if($request->has('searchall')){
+                $pegawai = ModelPegawai::where('nomor_induk_pegawai', 'like', '%' . $request->searchall . '%')
+                ->orWhere('nama', 'like', '%' . $request->searchall . '%')
+                ->get();
+            }elseif($request->has('search')) {
+                # code...
+                $pegawai = ModelPegawai::where('nomor_induk_pegawai', 'like', '%' . $request->search . '%')
+                ->orWhere('nama', 'like', '%' . $request->search . '%')
+                ->paginate(10)->through(function($item){
+            
+                    return [
+                        'id'=> $item->id,
+                        'nomor_induk_pegawai'=> $item->nomor_induk_pegawai,
+                        'nama'=> $item->nama,
+                        'tgl_lahir'=>$item->tgl_lahir,
+                        'nama_jabatan'=>$item->jabatanOrganisasi->nama_jabatan
+                    ];
+                    
+                });
+                $pegawai->appends ( array (
+                    'search' => $request->search
+                ) );
+                
+            }else{
+                $pegawai = ModelPegawai::paginate(10)->through(function($item){
+            
+                    return [
+                        'id'=> $item->id,
+                        'nomor_induk_pegawai'=> $item->nomor_induk_pegawai,
+                        'nama'=> $item->nama,
+                        'tgl_lahir'=>$item->tgl_lahir,
+                        'nama_jabatan'=>$item->jabatanOrganisasi->nama_jabatan
+                    ];
+                    
+                });
+            
+            }
+            if ($is_api_request) {
+                //jika request dari route api
+                return $pegawai;
+            }else{
+                return Inertia::render('Pegawai/Index',[
+                    'pegawai'=>$pegawai
+                ]);
+            }
+        
+        
+       
     }
 
     /**
@@ -47,9 +91,13 @@ class PegawaiController extends Controller
     /**
      * Show the specified resource.
      */
-    public function show($id)
+    public function show(Request $request, $id = null)
     {
+
+        
         return view('pegawai::show');
+        
+        
     }
 
     /**

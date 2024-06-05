@@ -20,37 +20,77 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index() : Response
+    public function index(Request $request) : Response
     {
+
         $permission = Permission::all();
-        $user=User::with('roles')->paginate(10)->through(function($item)use($permission){
-            $role = collect($item->roles)->map(function ($details,$key){
-            return collect([
-                "id" => $details->id,
-                "name" => $details->name,
-                "guard_name" => $details->guard_name
-                ]);
-            })->pluck('id');
-            $directpermission = $item->getDirectPermissions()->pluck('id');
-            $permissionviaroles =  $item->getPermissionsViaRoles()->pluck('id');
-            $allpermission =  $item->getAllPermissions()->pluck('id');
-            return collect([
-                'id' => $item->id,
-                'name' => $item->name,
-                'username' => $item->username,
-                'email' => $item->email,
-                'email_verified_at' => $item->email_verified_at,
-                'status' =>$item->status,
-                'role' =>$role,
-                'permission' => $permission->whereNotIn('id',$permissionviaroles)->values(), //master permission yang bisa dijadikan direct permission pada user interface (vue)
-                'id_directpermission'=>$directpermission,
-                'id_permissionviaroles' => $permissionviaroles,
-                'id_allpermission' => $allpermission,
-                'created_at'=>$item->created_at
-            ]);
-        });
         $role = Role::with('permissions')->get();
         $permission = Permission::all();
+    
+        if ($request->has('search')) {
+            $user=User::where('name', 'like', '%' . $request->search . '%')
+            ->orWhere('username', 'like', '%' . $request->search . '%')
+            ->with('roles')->paginate(10)->through(function($item)use($permission){
+                $role = collect($item->roles)->map(function ($details,$key){
+                return collect([
+                    "id" => $details->id,
+                    "name" => $details->name,
+                    "guard_name" => $details->guard_name
+                    ]);
+                })->pluck('id');
+                $directpermission = $item->getDirectPermissions()->pluck('id');
+                $permissionviaroles =  $item->getPermissionsViaRoles()->pluck('id');
+                $allpermission =  $item->getAllPermissions()->pluck('id');
+                return collect([
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'username' => $item->username,
+                    'email' => $item->email,
+                    'email_verified_at' => $item->email_verified_at,
+                    'status' =>$item->status,
+                    'role' =>$role,
+                    'permission' => $permission->whereNotIn('id',$permissionviaroles)->values(), //master permission yang bisa dijadikan direct permission pada user interface (vue)
+                    'id_directpermission'=>$directpermission,
+                    'id_permissionviaroles' => $permissionviaroles,
+                    'id_allpermission' => $allpermission,
+                    'created_at'=>$item->created_at
+                ]);
+            });
+            $user->appends ( array (
+                'search' => $request->search
+            ) );
+            
+        }else{
+            
+            $user=User::with('roles')->paginate(10)->through(function($item)use($permission){
+                $role = collect($item->roles)->map(function ($details,$key){
+                return collect([
+                    "id" => $details->id,
+                    "name" => $details->name,
+                    "guard_name" => $details->guard_name
+                    ]);
+                })->pluck('id');
+                $directpermission = $item->getDirectPermissions()->pluck('id');
+                $permissionviaroles =  $item->getPermissionsViaRoles()->pluck('id');
+                $allpermission =  $item->getAllPermissions()->pluck('id');
+                return collect([
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'username' => $item->username,
+                    'email' => $item->email,
+                    'email_verified_at' => $item->email_verified_at,
+                    'status' =>$item->status,
+                    'role' =>$role,
+                    'permission' => $permission->whereNotIn('id',$permissionviaroles)->values(), //master permission yang bisa dijadikan direct permission pada user interface (vue)
+                    'id_directpermission'=>$directpermission,
+                    'id_permissionviaroles' => $permissionviaroles,
+                    'id_allpermission' => $allpermission,
+                    'created_at'=>$item->created_at
+                ]);
+            });
+        
+        }
+
         
         return Inertia::render('User/User',[
             'listuser'=>$user,

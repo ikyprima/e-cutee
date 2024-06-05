@@ -1,5 +1,5 @@
 <script setup>
-import ToastListItem from '@/Components/Notifications/ToastListItem.vue';
+import ToastListItem from '@/Components/notus/Notifications/ToastListItem.vue';
 import toast from "@/Stores/toast.js";
 
 

@@ -78,12 +78,12 @@ const maxWidthClass = computed(() => {
                             <slot v-if="show" />
                     </div> -->
                     <div v-if="show"
-    class="  h-screen  outline-none focus:outline-none justify-center items-center flex">
-    <div class="bg-white rounded-lg md:max-w-md md:mx-auto p-4 fixed inset-x-0 bottom-0  mb-4 mx-4 md:relative">
-        <slot v-if="show" />
-        
-    </div>
-    </div>
+                        class="  h-screen  outline-none focus:outline-none justify-center items-center flex">
+                        <div class="bg-white rounded-lg md:max-w-md md:mx-auto p-4 fixed inset-x-0 bottom-0  mb-4 mx-4 md:relative w-5/6">
+                            <slot v-if="show" />
+                            
+                        </div>
+                    </div>
                     
                 </transition>
             </div>

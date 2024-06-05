@@ -6,8 +6,9 @@ import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
-
-
+import "@vueform/multiselect/themes/default.css";
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loader
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
@@ -32,6 +33,7 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue)
             .use(vuetify)
+            .component('VueDatePicker', VueDatePicker)
             .mount(el);
     },
     progress: {

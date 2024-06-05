@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('id_jenis_cuti');
             $table->string('alasan_cuti'); 
-            $table->longText('alamat'); 
+            $table->longText('alamat')->nullable(); 
             $table->string('telp',12); 
             $table->bigInteger('id_pegawai');
             $table->char('status', 1)->default(0);

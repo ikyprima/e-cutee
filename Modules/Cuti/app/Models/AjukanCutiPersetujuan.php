@@ -16,7 +16,7 @@ class AjukanCutiPersetujuan extends Model
      * The attributes that are mass assignable.
      */
     protected $table = 'tb_cuti_persetujuan';
-    protected $fillable = ['id_ajukan_cuti','id_detail_hirarki','status','id_pegawai','aktif'];
+    protected $fillable = ['id_ajukan_cuti','id_detail_hirarki','status','id_pegawai','aktif','alasan_tolak'];
 
     protected static function newFactory(): AjukanCutiPersetujuanFactory
     {

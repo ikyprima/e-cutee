@@ -14,6 +14,6 @@ use Modules\Pegawai\Http\Controllers\PegawaiController;
  *
 */
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+Route::middleware([])->prefix('v1')->group(function () {
     Route::apiResource('pegawai', PegawaiController::class)->names('pegawai');
 });

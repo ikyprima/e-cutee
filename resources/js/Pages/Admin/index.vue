@@ -1,34 +1,63 @@
 <script setup>
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-
+import AdminLayout from '@/Layouts/Admin.vue';
+import CardTable from "@/Components/notus/Cards/CardTable.vue";
+import HeaderStats from "@/Components/notus/Headers/HeaderStats.vue";
+import { Head,Link } from '@inertiajs/vue3';
+import ButtonTambah from '@/Components/notus/Buttons/ButtonTambah.vue';
+import Modal from '@/Components/Modal.vue';
+import Dialog from '@/Components/notus/Dialog.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
+// import { Select, initTE } from "tw-elements";
+// initTE({ Select });
 </script>
 
 <template>
+
+    <Head title="Manajemen User" />
+
     <AdminLayout>
-    
-    <v-container>
-        
-        <v-row>
-            <v-card
-            class="mx-auto my-8"
-            elevation="16"
-            min-width=100%
-        >
-    <v-card-item>
-      <v-card-title>
-        Dashboard
-      </v-card-title>
+        <template #textnavbar>
+            USER
+        </template> 
+        <template #header>
+            <header-stats>
+                <template #kontenheader>
+                    SELAMAT DATANG <b> {{ $page.props.auth.user.name }}.</b>
+                </template>
+                
+            </header-stats>
+        </template>
+        <div class="flex flex-wrap mt-4">
+            <div class="w-full mb-12 px-4">
+                
+                
+            </div>
 
-      <v-card-subtitle>
-      
-      </v-card-subtitle>
-    </v-card-item>
-
-    <v-card-text>
-      SELAMAT DATANG <b> {{ $page.props.auth.user.name }}.</b>
-    </v-card-text>
-  </v-card>
-        </v-row>
-    </v-container>
+        </div>
     </AdminLayout>
+    
 </template>
+
+<script>
+
+export default {
+    props:{
+       
+    },
+
+    data() {
+        return {
+        };
+    },
+    computed: {
+    
+    },
+    methods: {
+    },
+
+    
+};
+</script>

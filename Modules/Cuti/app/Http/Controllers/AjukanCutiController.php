@@ -65,6 +65,25 @@ class AjukanCutiController extends Controller
         // $pegawai['jabatan']= $jabatan;
         // $pegawai['hirarki']= $hirarki;
         // $pegawai['hirarki']['detail']= $detailHirarki;
+        
+        $rules = [
+            'jenisCuti' => ['required'],
+            'alasanCuti' => ['required'],
+            'noTelp' => ['required', 'numeric', 'max_digits:13']
+        ];
+        $customMessages = [
+            'required' => 'field harus di isi.',
+            'unique'=> 'field sudah terdaftar',
+            'email'=> 'format field salah',
+            'numeric'=> 'isi hanya boleh angka',
+            'max'=> 'maximal :max karakter',
+            'max_digits'=>'tidak boleh lebih dari :max angka'
+        ];
+
+        
+        Validator::make($request->all(), $rules, $customMessages)
+        ->validate();
+
 
         $pegawai = Pegawai::with(['jabatanOrganisasi','hasHirarki.hirarki.detailHirarki'])->where('nomor_induk_pegawai',Auth::user()->username)->first();
         $jabatan =  collect($pegawai->jabatanOrganisasi);
@@ -88,23 +107,13 @@ class AjukanCutiController extends Controller
         $pegawai['jabatan']= $jabatan;
         $pegawai['hirarki']= $hirarki;
         $pegawai['hirarki']['detail']= $detailHirarki;
-
+    
         try {
             //insert ke table ajukan cuti
-            $rules = [];
-            $customMessages = [
-                'required' => 'field harus di isi.',
-                'unique'=> 'field sudah terdaftar',
-                'email'=> 'format field salah'
-            ];
-
-            
-            $validator = Validator::make($request->all(), $rules, $customMessages)
-            ->validate();
-
+          
             
             $formAjukanCuti = AjukanCuti::create([
-                'id_jenis_cuti'=> $request->jenisCuti['value'],
+                'id_jenis_cuti'=> $request->jenisCuti,
                 'alasan_cuti'=> $request->alasanCuti,
                 'alamat'=> $request->alamat,
                 'telp'=> $request->noTelp,

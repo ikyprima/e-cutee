@@ -146,7 +146,6 @@ import Dialog from '@/Components/notus/Dialog.vue';
             </div>
             <div class="relative p-6 flex-auto animatecss animatecss-fadeInLeft">
                 <form @submit.prevent>
-                   
                     <div class="grid grid-cols-1 md:grid-cols-1 ">
                         <div class="relative mb-2 ">
                             <InputLabel for="namahirarki" value="Nama" class="" />
@@ -165,17 +164,26 @@ import Dialog from '@/Components/notus/Dialog.vue';
                         <Transition :duration="{ enter: 500, leave: 500 }">
                             <div class="grid grid-cols-2 md:grid-cols-2 gap-2 ">
                                 <div class="relative   ">
-                                    <InputLabel value="Pilih Pegawai" />
+                                    <InputLabel value="Nama Pegawai" />
                                     <div class="mt-1 block w-full">
-                                        <Multiselect valueProp="id" v-model="formhirarki.detail[index]['id_pegawai']"
-                                            label="name" :searchable="true"
+                                        <Multiselect  v-model="formhirarki.detail[index]['id_pegawai']"
+                                            v-bind="optionPegawaiSelect"
+
+                                            @clear="(val) => "
+                                            @select="(val) => pilihpegawai(val, index) "
+                                            @deselect="(val) => "
                                             />
+                                        />
                                     </div>
+                                    <p v-if="$page.props.errors['detail.' + index + '.id_pegawai']"
+                                        class="mt-2 text-sm text-red-600 dark:text-red-500">
+                                        {{ $page.props.errors['detail.' + index + '.id_pegawai'] }}
+                                    </p>
                                 </div>
                                 <div class="relative  ">
                                     <InputLabel value="Urutan" class="" />
                                     <div class="relative w-full ">
-                                        <TextInput :id="'menu-' + index" ref="menuInput" type="number"
+                                        <TextInput :id="'urutan-' + index" ref="urutanInput" type="number"
                                             class="mt-1 block w-full" placeholder="urutan" v-model="item.urutan" />
                                         <button v-on="{ click: () => tambahAtauHapus(index) }" class="absolute top-0 right-0 p-2.5 h-full text-sm font-medium text-white
                                                     rounded-r-lg
@@ -186,7 +194,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
                                             <template v-if="index == 0">
                                                 <i class="fas fa-lg fa-plus"></i>
                                             </template>
-                                            <template v-else="index == 0">
+                                            <template v-else>
                                                 <i class="fas fa-lg fa-trash-alt"></i>
                                             </template>
                                         </button>
@@ -197,9 +205,6 @@ import Dialog from '@/Components/notus/Dialog.vue';
                                         {{ $page.props.errors['detail.' + index + '.urutan'] }}
                                     </p>
                                 </div>
-                               
-                                
-                              
                             </div>
                         </Transition>
 
@@ -258,6 +263,22 @@ export default {
     },
     data() {
         return {
+            optionPegawaiSelect: {
+                closeOnSelect: false,
+                placeholder: 'pilih pegawai',
+                filterResults: false,
+                minChars: 0,
+                resolveOnLoad: false,
+                infinite: true,
+                limit: 10,
+                clearOnSearch: true,
+                delay: 0,
+                searchable: true,
+                options: async (query) => {
+                    return await this.cariPegawai(query)
+                }
+                
+            },
             showModal: false,
             dialogHapus:false,
             editMode: false,
@@ -305,6 +326,26 @@ export default {
         };
     },
     methods: {
+     
+        cariPegawai : async(query) => {
+            const url = route('api.pegawai.index', { searchall: query });
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText} (Status: ${response.status})`);
+                }
+                const data = await response.json();
+                return data.map((item) => {
+                    return { value: item.id, label: item.nama }
+                })
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        },
+        pilihpegawai : function (value, i) {
+            console.log(value)
+        },
+
         tambahData() {
             this.editMode = false;
             this.objhirarki = null;
@@ -318,61 +359,20 @@ export default {
             this.formhirarki.reset();
             this.formhirarki.clearErrors()
         },
-        clickedit(value){
-            this.editMode = true;
-            this.objpermission = value;
-            this.showModal = !this.showModal;
-            this.formhirarki.reset()
-            this.formhirarki.clearErrors()
-            this.formhirarki.permission = value.name;
-        },
-        clickhapus(value){
-        
-            this.objpermission = value;
-            this.dialogHapus = !this.dialogHapus;
-        
-        },
-        closeDialogHapus: function () {
-            this.dialogHapus = !this.dialogHapus;
-        },
-        simpan() {
-            if (this.editMode == true) {
-                this.formhirarki.put(route('permission.update', this.objpermission.id), {
-                    preserveScroll: true,
-                    preserveState: true,
-                    onSuccess: () => {
-                        this.showModal = !this.showModal;
-                        this.objpermission = null;
-                        this.formhirarki.reset();
-                        // this.pagings(this.path+'?page='+this.halaman);
-                    }
-                })
-
+    
+        tambahAtauHapus: function (value) {
+            if (value == 0) {
+                const tambahField = {
+                    urutan: '',
+                    id_pegawai: ''
+                };
+                
+                this.formhirarki.detail.push(tambahField);
             } else {
-                this.formhirarki.post(route('permission.store'), {
-                    preserveScroll: true,
-                    preserveState: true,
-                    onSuccess: () => {
-                        this.showModal = !this.showModal;
-                        this.objpermission = null;
-                        this.formhirarki.reset();
-                    },
-                })
+                this.formhirarki.detail.splice(value, 1);
             }
 
         },
-        hapus(){
-            this.formhirarki.delete(route('permission.destroy', this.objpermission.id), {
-                preserveScroll: true,
-                preserveState: true,
-                onSuccess: () => {
-                    this.dialogHapus = !this.dialogHapus;
-                    this.objpermission = null;
-                
-                }
-
-            })
-        }
     },
 
     
