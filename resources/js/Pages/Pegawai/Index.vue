@@ -7,7 +7,7 @@ import CardStats from "@/Components/notus/Cards/CardStats.vue";
 import { Head,Link,router } from '@inertiajs/vue3';
 
 import DangerButton from '@/Components/DangerButton.vue';
-
+import Multiselect from '@vueform/multiselect'
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -71,7 +71,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
         <div class="flex flex-wrap mt-4">
             <div class="w-full mb-12 px-4">
 
-                <card-table @clickedit="clickedit" @clickhapus="clickhapus" :list=pegawai.data :header=setting namaTitle='LIST PEGAWAI'> 
+                <card-table @klik="klikMethod" @clickedit="clickedit" @clickhapus="clickhapus" :list=pegawai.data :header=setting namaTitle='LIST PEGAWAI'> 
                     <template #button>
                         <div class="hidden md:block">
                             <!-- <ButtonTambah @click="tambahData">Tambah</ButtonTambah> -->
@@ -166,6 +166,65 @@ import Dialog from '@/Components/notus/Dialog.vue';
 
         </div>
     </AdminLayout>
+    <Modal :show="showModalAddHirarki" @close="closeModalAddHirarki">
+        <div class="p-2">
+            <div class="flex items-start justify-between p-1 border-b border-solid border-blueGray-200 rounded-t">
+                <h3 class="text-xl font-semibold">
+                    Setting Alur Cuti
+                </h3>
+            </div>
+            <div class="relative p-6 flex-auto">
+                <form >
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-1 ">
+                        <div class="relative mb-2">
+                            <InputLabel for="permission" value="Pilih Alur" class="" />
+                            <Multiselect 
+                                valueProp="id" 
+                                label="nama_hirarki" 
+                                class="mt-1 block w-full" 
+                                :options="hirarki"
+                                :searchable="true"
+                                @select="(value) => pilihHirarki(value)"
+                                />
+                          
+                        </div>
+                        
+                    </div>
+                    <div class="block w-full overflow-x-auto pt-4" v-if="arrPilihHirarki.length > 0">
+                        <table class="items-center w-full bg-transparent border-collapse">
+                            <thead>
+                                <tr class="border">
+                                    <th class="border px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-3 text-left w-1/4"> NAMA ATASAN </th>
+                                    <th class="border px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-3 text-center w-1/4"> URUTAN </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border" v-for="data in arrPilihHirarki">
+                                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-3 text-left w-1/4"> {{data.pegawai.nama}} </td>
+                                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm text-center whitespace-nowrap p-3"> {{data.urutan}}   </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                </div>
+                </form>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <SecondaryButton @click="closeModalAddHirarki">
+                    Batal
+                </SecondaryButton>
+                <PrimaryButton class="ml-3" v-on:click="simpanAddHirarki" 
+                :class="{ 'opacity-25': formAddHirarki.processing }" :disabled="formAddHirarki.processing">
+                <div v-if="editMode == true">
+                    Simpan Perubahan
+                </div>
+                <div v-else>
+                    Simpan
+                </div>
+                </PrimaryButton>
+            </div>
+        </div>
+    </Modal>
     <Modal :show="showModal" @close="closeModal">
         <div class="p-2">
             <div class="flex items-start justify-between p-1 border-b border-solid border-blueGray-200 rounded-t">
@@ -185,15 +244,17 @@ import Dialog from '@/Components/notus/Dialog.vue';
                                 type="text"
                                 class="mt-1 block w-full"
                                 placeholder="Permission"
-                                v-model="formpermission.permission"
+                                v-model="formAddHirarki.permission"
                             />
-                            <p v-if="formpermission.errors.permission" 
+                            <p v-if="formAddHirarki.errors.permission" 
                                 class="mt-2 text-sm text-red-600 dark:text-red-500">
-                                {{formpermission.errors.permission }}
+                                {{formAddHirarki.errors.permission }}
                             </p>
                         </div>
                         
                     </div>
+                    
+
                 </form>
             </div>
             <div class="mt-6 flex justify-end">
@@ -201,7 +262,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
                     Batal
                 </SecondaryButton>
                 <PrimaryButton class="ml-3" v-on:click="simpan" 
-                :class="{ 'opacity-25': formpermission.processing }" :disabled="formpermission.processing">
+                :class="{ 'opacity-25': formAddHirarki.processing }" :disabled="formAddHirarki.processing">
                 <div v-if="editMode == true">
                     Simpan Perubahan
                 </div>
@@ -225,7 +286,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
         <div class="text-center md:text-right mt-4 md:flex md:justify-end">
             <button v-on:click="hapus()"
                 class="block w-full md:inline-block md:w-auto px-4 py-3 md:py-2 bg-red-200 
-                text-red-700 rounded-lg font-semibold text-sm md:ml-2 md:order-2 " :class="{ 'opacity-25': formpermission.processing }" :disabled="formpermission.processing">
+                text-red-700 rounded-lg font-semibold text-sm md:ml-2 md:order-2 " :class="{ 'opacity-25': formAddHirarki.processing }" :disabled="formAddHirarki.processing">
                 Ya, Hapus</button>
             <button v-on:click="closeDialogHapus()" class="block w-full md:inline-block md:w-auto px-4 py-3 md:py-2 bg-gray-200 rounded-lg font-semibold text-sm mt-4
             md:mt-0 md:order-1">Batal</button>
@@ -241,17 +302,23 @@ export default {
     
     props: {
         pegawai: Object,
-
+        hirarki : Object
+    },
+    components : {
+        Multiselect
     },
     data() {
         return {
             search:'',
             showModal: false,
+            showModalAddHirarki : false,
             dialogHapus:false,
             editMode: false,
             objpermission : null,
-            formpermission: this.$inertia.form({
-                permission: '',
+            arrPilihHirarki :  [],
+            formAddHirarki: this.$inertia.form({
+                id_hirarki: '',
+                id_pegawai: '',
             }),
 
             setting: [ //seting header table
@@ -278,15 +345,58 @@ export default {
                     align: 'left'
                 },
 
+                // {
+
+                //     title: 'Aksi',
+                //     field: null,
+                //     type: 'button',
+                //     size: 20,
+                //     align: 'center'
+                // },
                 {
-
-                    title: 'Aksi',
-                    field: null,
-                    type: 'button',
-                    size: 20,
-                    align: 'center'
+                    title: 'Status',
+                    field: 'stringstat',
+                    subfield : [
+                        {
+                            field : 'nama',
+                            class : 'class'
+                        },
+                    ],
+                    type: 'badge',
+                    size: 'auto',
+                    align: 'left',
+                    class: ''
                 },
-
+                {
+                        title: 'Aksi',
+                        field: null,
+                        type: 'button-group',
+                        data: [
+                            {
+                                text: '',
+                                type: 'button',
+                                action: 'addhirarki',
+                                class: 'border rounded-l-2xl border-blue-500 hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-700 focus:bg-blue-500 focus:text-white focus:z-[1]',
+                                icon: 'fas fa-lg fa-file-contract'
+                            },
+                            {
+                                text: '',
+                                type: 'button',
+                                action: 'clickedit',
+                                class: 'border border-blue-500 hover:bg-green-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-700 focus:bg-green-500 focus:text-white focus:z-[1]',
+                                icon: 'fas fa-lg fa-edit'
+                            },
+                            {
+                                text: '',
+                                type: 'button',
+                                action: 'clickhapus',
+                                class: 'border rounded-r-2xl border-blue-500  hover:bg-red-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-700 focus:bg-red-500 focus:text-white  focus:z-[1]',
+                                icon: 'fas fa-lg fa-trash'
+                            },
+                        ],
+                        size: 20,
+                        align: 'center'
+                    },
 
             ],
 
@@ -298,22 +408,38 @@ export default {
             this.editMode = false;
             this.objpermission = null;
             this.showModal = !this.showModal;
-            this.formpermission.reset()
-            this.formpermission.clearErrors()
+            this.formAddHirarki.reset()
+            this.formAddHirarki.clearErrors()
         },
         closeModal(){
             this.editMode = false;
             this.showModal = !this.showModal;
-            this.formpermission.reset();
-            this.formpermission.clearErrors()
+        
+        },
+        closeModalAddHirarki(){
+            this.editMode = false;
+            this.showModalAddHirarki = !this.showModalAddHirarki;
+            this.formAddHirarki.reset()
+            this.formAddHirarki.clearErrors()
+            this.arrPilihHirarki = []
+        
+        },
+        klikMethod(value) {
+            const method = value.action;
+            this[method](value.value)
+        },
+        addhirarki(value){
+            this.formAddHirarki.id_pegawai = value.id;
+            console.log(value);
+            this.showModalAddHirarki = !this.showModalAddHirarki;
         },
         clickedit(value){
             this.editMode = true;
             this.objpermission = value;
             this.showModal = !this.showModal;
-            this.formpermission.reset()
-            this.formpermission.clearErrors()
-            this.formpermission.permission = value.name;
+            this.formAddHirarki.reset()
+            this.formAddHirarki.clearErrors()
+         
         },
         clickhapus(value){
         
@@ -326,41 +452,23 @@ export default {
         },
         simpan() {
             if (this.editMode == true) {
-                this.formpermission.put(route('permission.update', this.objpermission.id), {
-                    preserveScroll: true,
-                    preserveState: true,
-                    onSuccess: () => {
-                        this.showModal = !this.showModal;
-                        this.objpermission = null;
-                        this.formpermission.reset();
-                        // this.pagings(this.path+'?page='+this.halaman);
-                    }
-                })
+               
 
             } else {
-                this.formpermission.post(route('permission.store'), {
-                    preserveScroll: true,
-                    preserveState: true,
-                    onSuccess: () => {
-                        this.showModal = !this.showModal;
-                        this.objpermission = null;
-                        this.formpermission.reset();
-                    },
-                })
+               
             }
 
         },
-        hapus(){
-            this.formpermission.delete(route('permission.destroy', this.objpermission.id), {
-                preserveScroll: true,
-                preserveState: true,
-                onSuccess: () => {
-                    this.dialogHapus = !this.dialogHapus;
-                    this.objpermission = null;
-                
-                }
-
-            })
+        simpanAddHirarki(){
+            this.formAddHirarki.post(route('pegawai.add.hirarki'), {
+                    preserveScroll: true,
+                    preserveState: true,
+                    onSuccess: () => {
+                        this.showModalAddHirarki = !this.showModalAddHirarki;
+                        this.arrPilihHirarki = [];
+                        this.formAddHirarki.reset();
+                    },
+                })
         },
         cari(){
             router.get(route('pegawai.index'), {
@@ -372,6 +480,12 @@ export default {
             })
             
         },
+        pilihHirarki(value){
+            let hirarki = this.hirarki.find(item => item.id == value)
+            this.arrPilihHirarki = hirarki.detail_hirarki;
+            this.formAddHirarki.id_hirarki = value;
+            
+        }
         
     },
 

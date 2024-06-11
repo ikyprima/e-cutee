@@ -16,4 +16,5 @@ use Modules\Pegawai\Http\Controllers\PegawaiController;
 
 Route::group([], function () {
     Route::resource('pegawai', PegawaiController::class)->names('pegawai');
+    Route::post('/pegawai/add-hirarki', [PegawaiController::class, 'addHirarki'])->name('pegawai.add.hirarki');
 });

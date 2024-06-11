@@ -11,6 +11,9 @@ use Validator;
 use Redirect;
 use Illuminate\Support\MessageBag;
 use Modules\Pegawai\Models\ModelPegawai;
+use Modules\Cuti\Models\Hirarki;
+use Modules\Cuti\Models\HirarkiHasPegawai;
+
 
 use  App\Models\User;
 class PegawaiController extends Controller
@@ -42,7 +45,12 @@ class PegawaiController extends Controller
                         'nomor_induk_pegawai'=> $item->nomor_induk_pegawai,
                         'nama'=> $item->nama,
                         'tgl_lahir'=>$item->tgl_lahir,
-                        'nama_jabatan'=>$item->jabatanOrganisasi->nama_jabatan
+                        'nama_jabatan'=>$item->jabatanOrganisasi->nama_jabatan,
+                        'stringstat' => [
+                            'nama'=> $item->hasHirarki ? 'sudah setting' : 'belum setting',
+                            'kode'=>  $item->hasHirarki ? 1 : 0,
+                            'class'=> $item->hasHirarki ? 'text-green-600 bg-green-200' : 'text-red-600 bg-red-200',
+                        ]
                     ];
                     
                 });
@@ -51,25 +59,36 @@ class PegawaiController extends Controller
                 ) );
                 
             }else{
-                $pegawai = ModelPegawai::paginate(10)->through(function($item){
-            
+
+                $pegawai = ModelPegawai::with('hasHirarki')->paginate(10)->through(function($item){
+                
                     return [
                         'id'=> $item->id,
                         'nomor_induk_pegawai'=> $item->nomor_induk_pegawai,
                         'nama'=> $item->nama,
                         'tgl_lahir'=>$item->tgl_lahir,
-                        'nama_jabatan'=>$item->jabatanOrganisasi->nama_jabatan
+                        'nama_jabatan'=>$item->jabatanOrganisasi->nama_jabatan,
+                        'stringstat' => [
+                            'nama'=> $item->hasHirarki ? 'sudah setting' : 'belum setting',
+                            'kode'=>  $item->hasHirarki ? 1 : 0,
+                            'class'=> $item->hasHirarki ? 'text-green-600 bg-green-200' : 'text-red-600 bg-red-200',
+                        ]
+                    
                     ];
                     
                 });
+
             
             }
             if ($is_api_request) {
                 //jika request dari route api
                 return $pegawai;
             }else{
+                $masterHirarki = Hirarki::with('detailHirarki.pegawai')->get();
                 return Inertia::render('Pegawai/Index',[
-                    'pegawai'=>$pegawai
+                    'pegawai'=>$pegawai,
+                    'hirarki' => $masterHirarki
+
                 ]);
             }
         
@@ -92,7 +111,42 @@ class PegawaiController extends Controller
     {
         //
     }
+    public function addHirarki(Request $request): RedirectResponse
+    {
+       
+        try{
 
+            $rules = [
+                'id_hirarki' => ['required'],
+                'id_pegawai' => ['required']
+            ];
+            $customMessages = [
+                'required' => 'field harus di isi.',
+                'unique'=> 'field sudah terdaftar',
+                'email'=> 'format field salah',
+                'numeric'=> 'isi hanya boleh angka',
+                'max'=> 'maximal :max karakter',
+                'max_digits'=>'tidak boleh lebih dari :max angka'
+            ];
+    
+            
+            Validator::make($request->all(), $rules, $customMessages)
+            ->validate();
+
+            HirarkiHasPegawai::firstOrCreate([
+                'id_hirarki' =>  $request->id_hirarki,
+                'id_pegawai' => $request->id_pegawai,
+            ]);
+
+            return Redirect::route('pegawai.index');
+
+        } catch(\Illuminate\Database\QueryException $e){
+            // return dd($e);
+            $text= $e->getMessage();
+            $errors = new MessageBag(['nama' => [$e->errorInfo[2]]]);
+            return Redirect::back()->withErrors($errors);
+        }
+    }
     /**
      * Show the specified resource.
      */

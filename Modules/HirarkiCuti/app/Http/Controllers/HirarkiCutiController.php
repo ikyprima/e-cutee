@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Modules\Cuti\Models\Hirarki;
+use Modules\Cuti\Models\DetailHirarki;
 use Inertia\Inertia;
 use Inertia\Response;
 use Validator;
@@ -53,7 +54,58 @@ class HirarkiCutiController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        //
+        try{
+
+            $rules = [
+                'nama_hirarki' => ['required'],
+                'detail.*.id_pegawai' => [
+                    'required',
+                ],
+                'detail.*.urutan' => [
+                    'required',
+                ],
+                
+            ];
+            $customMessages = [
+                'required' => 'field harus di isi.',
+                'unique'=> 'field sudah terdaftar',
+                'email'=> 'format field salah',
+                'numeric'=> 'isi hanya boleh angka',
+                'max'=> 'maximal :max karakter',
+                'max_digits'=>'tidak boleh lebih dari :max angka'
+            ];
+    
+            
+            Validator::make($request->all(), $rules, $customMessages)
+            ->validate();
+
+            $hirarki = Hirarki::firstOrCreate([
+                'nama_hirarki' => $request->nama_hirarki,
+            ]);
+
+            $idHirarki = $hirarki->id;
+
+          
+            
+            foreach ($request->detail as $key => $item) {
+               
+                DetailHirarki::firstOrCreate([
+                    'id_hirarki' =>  $idHirarki,
+                    'id_pegawai' => $item['id_pegawai'],
+                ], [
+                    'urutan' => $item['urutan'],
+                ]);
+            }
+
+            return Redirect::route('hirarkicuti.index');
+
+        } catch(\Illuminate\Database\QueryException $e){
+            // return dd($e);
+            $text= $e->getMessage();
+            $errors = new MessageBag(['nama' => [$e->errorInfo[2]]]);
+            return Redirect::back()->withErrors($errors);
+        }
+        
     }
 
     /**

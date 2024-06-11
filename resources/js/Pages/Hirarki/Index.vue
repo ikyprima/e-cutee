@@ -187,7 +187,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
                                         <TextInput :id="'urutan-' + index" ref="urutanInput" type="number"
                                             class="mt-1 block w-full" placeholder="urutan" v-model="item.urutan" />
                                         <button v-on="{ click: () => tambahAtauHapus(index) }" class="absolute top-0 right-0 p-2.5 h-full text-sm font-medium text-white
-                                                    rounded-r-lg
+                                                    rounded-r-md
                                                     border 
                                                     focus:ring-4 focus:outline-none "
                                             :class="[index == 0 ? 'bg-blue-700 border-blue-700 hover:bg-blue-800 focus:ring-blue-300' :
@@ -385,6 +385,24 @@ export default {
             } else {
                 this.formhirarki.detail.splice(value, 1);
             }
+        },
+
+        simpan() {
+            if (this.editMode == true) {
+            
+
+            } else {
+                this.formhirarki.post(route('hirarkicuti.store'), {
+                    preserveScroll: true,
+                    preserveState: true,
+                    onSuccess: () => {
+                        this.showModal = !this.showModal;
+                        this.objhirarki = null;
+                        this.formhirarki.reset();
+                    },
+                })
+            }
+
         },
     },
 
