@@ -48,6 +48,7 @@ import ToastList from '@/Components/notus/Notifications/ToastList.vue';
                                         :class="[color === 'light' ? 'text-blueGray-700' : 'text-white']">
                                         Tambah Cuti
                                     </h3>
+                                
                                 </div>
                                     <div class="relative md:w-full md:max-w-full flex-grow flex-1 text-right">
                                         <div class="hidden md:block">
@@ -81,6 +82,33 @@ import ToastList from '@/Components/notus/Notifications/ToastList.vue';
                                 
                                 </div>
                                 <div class="grid grid-cols-2 md:grid-cols-2 gap-2 py-2">
+                                    <div class="relative  ">
+
+                                    
+                                        <InputLabel value="Lampiran " class="" />
+                                        <input
+                                            id="fileInput"
+                                            type="file"
+                                            ref="lampiran"
+                                            @input="formAjukanCuti.file = $event.target.files[0]" 
+                                            accept=".jpeg,.jpg,.pdf"
+                                            class="
+                                                w-full
+                                                px-4
+                                                py-2
+                                                mt-2
+                                                border
+                                                rounded-md
+                                                focus:outline-none
+                                                focus:ring-1
+                                                focus:ring-blue-600
+                                            "
+                                        />
+                                        <p v-if="formAjukanCuti.errors.file" class="mt-2 text-sm text-red-600 dark:text-red-500">{{
+                                            formAjukanCuti.errors.file }}</p>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 md:grid-cols-2 gap-2 py-2">
                                     
                                     <div class="relative  ">
                                         <InputLabel value="Alasan " class="" />
@@ -112,14 +140,14 @@ import ToastList from '@/Components/notus/Notifications/ToastList.vue';
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-1 py-2">
 
-                                <FullCalendar class='demo-app-calendar' :options='calendarOptions'>
+                                <FullCalendar  ref="calendar" class='demo-app-calendar' :options='calendarOptions'>
 
                                 </FullCalendar>
                                 </div>
                                 <div class="grid grid-cols-2 md:grid-cols-2 gap-2 py-2">
                                     
                                         <div class="relative ">
-                                                    <InputLabel value="Alamat Selama " class="" />
+                                                    <InputLabel value="Alamat Selama Cuti" class="" />
                                                         <textarea
                                                         type="text"
                                                         class="border-gray-300 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
@@ -187,9 +215,20 @@ import interactionPlugin from '@fullcalendar/interaction'
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 export default {
     mounted() {
+
         const startDate = new Date();
         const endDate = new Date(new Date().setDate(startDate.getDate() + 7));
         this.dataDatepicker = [startDate, startDate];
+        this.data_tanggal.forEach(element => {
+            this.calendarOptions.events.push(
+                { 
+                    title: element.title,
+                    date: element.tgl,
+                    color:'#FF0000',
+                    daridb : true
+                }
+            )
+        });
     },
     
     props:{
@@ -200,6 +239,8 @@ export default {
                 return ["light", "dark"].indexOf(value) !== -1;
             },
         },
+        data_tanggal : Object,
+        rekap_cuti : Object
     },
 
     data() {
@@ -207,6 +248,7 @@ export default {
             dataDatepicker: null,
             filteredDates: [],
             formAjukanCuti: this.$inertia.form({
+                file:'',
                 tanggalAwal : '',
                 tanggalAkhir : '',
                 jenisCuti: '',
@@ -233,11 +275,13 @@ export default {
                 selectable: true,
                 selectMirror: true,
                 dayMaxEvents: true,
-                weekends: true,
+                weekends: false,
                 select: this.handleDateSelect,
-                eventClick: this.handleEventClick,
-                eventsSet: this.handleEvents,
-                events: [ ]
+                // eventClick: this.handleEventClick,
+                // eventsSet: this.handleEvents,
+                events: [
+                    
+                 ]
                 /* 
                 eventAdd:
                 eventChange:
@@ -267,16 +311,55 @@ export default {
     
     methods: {
         pilihJenisCuti(){
-            this.currentEvents = [];
-            this.calendarOptions.events = [];
-            this.formAjukanCuti.tanggal = [];
+            // this.currentEvents = [];
+            // this.calendarOptions.events = [];
+            // this.formAjukanCuti.tanggal = [];
         },
 
         handleDate(modelData) {
+         
+
+            const calendarApi = this.$refs.calendar.getApi();
+            
+            const events = calendarApi.getEvents(); 
+            const eventsToRemove = events.filter(event => {
+                        const daridb = event.extendedProps.daridb;
+                        return daridb === false;
+            });
+            eventsToRemove.forEach(event => {
+                        if (!event.extendedProps.daridb) {
+                            event.remove();
+                            console.log('Extended Props:', event.extendedProps);
+
+                            const indextgl = this.formAjukanCuti.tanggal.findIndex(item => item.id === event.id);
+                            if (indextgl !== -1) {
+                                this.formAjukanCuti.tanggal.splice(indextgl, 1);
+                            }
+                        }
+                    
+                    
+                    });
+            
+                    
+            // const allEvents = calendarApi.getEvents();
+
+            // let arrayEventYangSudahAda = [];
+            // _.forEach(allEvents, function(event) {
+
+            //     arrayEventYangSudahAda.push({
+            //         date:moment(event.date).format('YYYY-MM-DD'),
+            //         daridb : true 
+            //     }
+            //     );
+            // });
+           
+        
+            let arrayEventYangSudahAda =this.calendarOptions.events;
             let newarrray = []
             _.forEach(modelData, function(modelData) {
                 newarrray.push(moment(modelData).format('YYYY-MM-DD'));
             });
+        
         
             this.formAjukanCuti.tanggalAwal = newarrray[0];
             this.formAjukanCuti.tanggalAkhir = newarrray[1];
@@ -285,6 +368,7 @@ export default {
             let start = moment(newarrray[0]);
             let end = moment(newarrray[1]);
             let dates = [];
+            
 
             while (start <= end) {
             // Only add the date if it is not Saturday (6) or Sunday (0)
@@ -292,16 +376,61 @@ export default {
                     let dataKalender = {
                         title: this.itemsJenisCuti.find(item => item.value == this.formAjukanCuti.jenisCuti).title,
                         date: start.format('YYYY-MM-DD'),
-                        color: '#5C88C4'
+                        color: '#5C88C4',
+                        daridb : false
                     };
                     // dates.push(start.format('YYYY-MM-DD'));
                     dates.push(dataKalender);
                 }
                 start.add(1, 'days');
             }
+          
+            const cekEventYangAda =arrayEventYangSudahAda.some(eventSatu => 
+                dates.some(eventDua =>
+                    eventSatu.date === eventDua.date
+                )
+            );
 
-            this.calendarOptions.events = dates;
+            if (cekEventYangAda) {
+                toast.add({
+                    message: 'Range Tanggal Yang Dipilih Sudah Ada Yang Terisi Cuti, silahkan hapus terlebih dahulu',
+                    category : 'warning',
+                    duration : 6000
+                })
+            }else{
+
+                dates.forEach(item => {
+                    const id = createEventId();
+                    
+                    calendarApi.addEvent({
+                        id: id,
+                        title: item.title,
+                        start: item.date,
+                        color: item.color,
+                        daridb : item.daridb
+                    })
+
+                
+                    this.formAjukanCuti.tanggal.push({
+                        'id': id,
+                        'title':item.title,
+                        'tgl':item.date,
+                        'color':item.color,
+                        // 'end': event.endStr // End date
+                        // 'end': event.endStr ? moment(event.endStr).subtract(1, 'day').format() : null
+                    })
+
+                });
+
+                // _.forEach(dates, function(item){
+                    
+                // });
+
+                // this.calendarOptions.events= dates;
+            }
+        
         },
+
         handleWeekendsToggle() {
             this.calendarOptions.weekends = !this.calendarOptions.weekends // update a property
         },
@@ -318,39 +447,73 @@ export default {
                 // let title = this.formAjukanCuti.jenisCuti?this.formAjukanCuti.jenisCuti.title:'cuti'
                 let title = this.itemsJenisCuti.find(item => item.value == this.formAjukanCuti.jenisCuti).title
                 let calendarApi = selectInfo.view.calendar
+            
                 const events = selectInfo.view.calendar.getEvents(); // Mendapatkan semua acara yang sedang ditampilkan
-                const currentDate = selectInfo.start.toISOString().slice(0, 10); // Mendapatkan tanggal acara yang sedang dirender
+                // const currentDate = selectInfo.start.toISOString().slice(0, 10); // Mendapatkan tanggal acara yang sedang dirender
+                const currentDate = selectInfo.startStr; // Mendapatkan tanggal acara yang sedang dirender
                 // Mengecek apakah ada acara lain pada tanggal yang sama
                 const eventExists = events.some(event => {
-                    const eventDate = event.start.toISOString().slice(0, 10);
+                    // const eventDate = event.start.toISOString().slice(0, 10);
+                    const eventDate = event.startStr;
                     return eventDate === currentDate && event.id !== selectInfo.id;
                 });
-
-                // Jika ada acara lain pada tanggal yang sama, jangan tampilkan acara ini
-                if (eventExists) {
                 
+            
+                // Jika ada acara lain pada tanggal yang sama, jangan tampilkan acara ini
+
+                if (eventExists) {
+                   
+
                     const eventsToRemove = events.filter(event => {
-                        const eventDate = event.start.toISOString().slice(0, 10);
+                        // console.log('Extended Props:', event.extendedProps);
+                        // const eventDate = event.start.toISOString().slice(0, 10);
+                     
+                        const eventDate = event.startStr;
                         return eventDate === currentDate;
                     });
 
+    
+                  
                     // Remove the events from the calendar
                     eventsToRemove.forEach(event => {
-                        event.remove();
+                        if (!event.extendedProps.daridb) {
+                            event.remove();
+                            const indextgl = this.formAjukanCuti.tanggal.findIndex(item => item.id === event.id);
+                            if (indextgl !== -1) {
+                                this.formAjukanCuti.tanggal.splice(indextgl, 1);
+                            }
+                        }
+                    
+                    
                     });
                 //    console.log('ada event');
                 }else{
                     calendarApi.unselect() // clear date selection
 
                     if (title) {
+                        // console.log(selectInfo.startStr);
+                        // console.log(selectInfo.endStr);
+                            const id = createEventId();
+                       
+
                         calendarApi.addEvent({
-                            id: createEventId(),
+                            id: id,
                             title,
                             start: selectInfo.startStr,
-                            end: selectInfo.endStr,
+                            // end: selectInfo.endStr,
                             allDay: selectInfo.allDay,
-                            color:'#5C88C4'
+                            color:'#5C88C4',
+                            daridb : false
                         })
+                        
+                        this.formAjukanCuti.tanggal.push({
+                                'id': id,
+                                'title':title,
+                                'tgl':selectInfo.startStr,
+                                'color':"#5C88C4",
+                                // 'end': event.endStr // End date
+                                // 'end': event.endStr ? moment(event.endStr).subtract(1, 'day').format() : null
+                            })
                     }
                 }
             }
@@ -358,12 +521,31 @@ export default {
         },
 
         handleEventClick(clickInfo) {
-            if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-                clickInfo.event.remove()
-            }
+            // if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
+            //     clickInfo.event.remove()
+            // }
         },
 
         handleEvents(events) {
+            // console.log(events);
+            // let tglawal,tglakhir ;
+            // events.forEach(event => {
+            //     const startDate = moment(event.startStr);
+            //     const endDate =moment(event.endStr).subtract(1, 'day').format();
+            //         // console.log(event.startStr),
+            //         // console.log(moment(event.endStr).subtract(1, 'day').format())
+            //         let currentDate = startDate.clone();
+            //         while (currentDate.isSameOrBefore(endDate, 'day')) {
+            //             // Format tanggal dalam format YYYY-MM-DD
+            //             console.log(currentDate.format('YYYY-MM-DD'));
+            //             // Tambahkan satu hari
+            //             currentDate.add(1, 'days');
+            //         }
+            // });
+            
+         
+            // console.log(tglawal + '1');
+            // console.log(tglakhir + '2');
             this.currentEvents = events
             this.formAjukanCuti.tanggal = events.map(event => ({
                 'title':event.title,
@@ -374,14 +556,35 @@ export default {
             }));
         },
         simpan() {
-            if (this.formAjukanCuti.tanggal.length != 0) {
-                this.formAjukanCuti.post(route('admin-ajukan-cuti-simpan'), {
-                    preserveScroll: true,
-                    preserveState: true,
-                    onSuccess: () => {
-                        this.formAjukanCuti.reset();
-                    },
-                })
+          
+            if (this.formAjukanCuti.tanggal.length > 0) {
+            
+                if (this.formAjukanCuti.jenisCuti == 1 && ( this.formAjukanCuti.tanggal.length > this.rekap_cuti.sisa_cuti_tahunan) ) {
+                    toast.add(
+                    {
+                        message: 'Sisa Kuota Cuti Tahunan Anda Tidak Mencukupi',
+                        category : 'warning'
+                    }
+                )
+                }else{
+                    this.formAjukanCuti.post(route('admin-ajukan-cuti-simpan'), {
+                        preserveScroll: true,
+                        preserveState: true,
+                        onSuccess: () => {
+                            this.formAjukanCuti.reset();
+                        },
+                        onError: (errors) => {
+                            toast.add({
+                                message: errors.global_error,
+                                category : 'warning',
+                                duration : 6000
+                            })
+                        },
+                    })
+                
+                   
+                }
+            
             }else{
                 toast.add(
                     {

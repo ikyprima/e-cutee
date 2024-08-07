@@ -140,9 +140,13 @@ import Dialog from '@/Components/notus/Dialog.vue';
     <Modal :show="showModal" @close="closeModal">
         <div class="p-2">
             <div class="flex items-start justify-between p-1 border-b border-solid border-blueGray-200 rounded-t">
-                <h3 class="text-xl font-semibold">
-                    Tambah
+                <h3 v-if="editMode" class="text-xl font-semibold">
+                    Ubah Data
                 </h3>
+                <h3 v-else class="text-xl font-semibold">
+                    Tambah Data
+                </h3>
+
             </div>
             <div class="relative p-6 flex-auto animatecss animatecss-fadeInLeft">
                 <form @submit.prevent>
@@ -168,12 +172,15 @@ import Dialog from '@/Components/notus/Dialog.vue';
                                     <div class="mt-1 block w-full">
                                         <!-- v-model="formhirarki.detail[index]['id_pegawai']" -->
                                         <!-- @deselect="(selectedValue) => hapusdetail(selectedValue, index)" -->
+                                        <!-- v-bind="optionPegawaiSelect" -->
+                                        <!-- @select="(val) => pilihpegawai(val, index) " -->
+                                        <!-- v-model="formhirarki.model[index]" -->
+                                        <!--  -->
                                         <Multiselect 
                                             v-bind="optionPegawaiSelect"
-                                            @select="(val) => pilihpegawai(val, index) "
+                                            v-model="formhirarki.model[index]"
+                                            @select="(val) => pilihpegawai(val, index)"
                                             @clear="() => hapusdetail(index)"
-                                           
-                                        
                                         />
                                     </div>
                                     <p v-if="$page.props.errors['detail.' + index + '.id_pegawai']"
@@ -184,8 +191,13 @@ import Dialog from '@/Components/notus/Dialog.vue';
                                 <div class="relative  ">
                                     <InputLabel value="Urutan" class="" />
                                     <div class="relative w-full ">
-                                        <TextInput :id="'urutan-' + index" ref="urutanInput" type="number"
-                                            class="mt-1 block w-full" placeholder="urutan" v-model="item.urutan" />
+                                        <TextInput 
+                                            :id="'urutan-' + index" 
+                                            ref="urutanInput"
+                                            type="text"
+                                            class="mt-1 block w-full"
+                                            placeholder="urutan" 
+                                            v-model="item.urutan" />
                                         <button v-on="{ click: () => tambahAtauHapus(index) }" class="absolute top-0 right-0 p-2.5 h-full text-sm font-medium text-white
                                                     rounded-r-md
                                                     border 
@@ -264,6 +276,9 @@ export default {
     },
     data() {
         return {
+        
+            selectedOption: null,
+            
             optionPegawaiSelect: {
                 closeOnSelect: true,
                 placeholder: 'pilih pegawai',
@@ -276,10 +291,10 @@ export default {
                 delay: 0,
                 searchable: true,
                 canClear :  true,
+                object: true,
                 options: async (query) => {
                     return await this.cariPegawai(query,this.formhirarki.detail)
-                }
-                
+                },
             },
             showModal: false,
             dialogHapus:false,
@@ -287,12 +302,8 @@ export default {
             objhirarki : null,
             formhirarki: this.$inertia.form({
                 nama_hirarki: '',
-                detail : [
-                    {
-                        urutan: '',
-                        id_pegawai: ''
-                    }
-                ]
+                model: [],
+                detail : []
             }),
 
             setting: [ //seting header table
@@ -328,6 +339,7 @@ export default {
         };
     },
     methods: {
+     
         cariPegawai : async(query,arrdata) => {
             const url = route('api.pegawai.index', { searchall: query });
             try {
@@ -351,12 +363,14 @@ export default {
         },
         pilihpegawai : function (value, i) {
             
-            let pegawai = this.formhirarki.detail.find(item => item.id_pegawai == value);
+            let pegawai = this.formhirarki.detail.find(item => item.id_pegawai == value.value);
             if (!pegawai) {
-                this.formhirarki.detail[i]['id_pegawai']= value;
+                this.formhirarki.detail[i]['id_pegawai']= value.value;
             }
         },
         hapusdetail : function(i){
+            // console.log(i);
+            
             this.formhirarki.detail[i]['id_pegawai']='';
         },
         tambahData() {
@@ -365,6 +379,12 @@ export default {
             this.showModal = !this.showModal;
             this.formhirarki.reset()
             this.formhirarki.clearErrors()
+            this.formhirarki.detail.push(
+                {
+                    id_pegawai : '',
+                    urutan : '',
+                },
+            )
         },
 
         closeModal(){
@@ -389,7 +409,17 @@ export default {
 
         simpan() {
             if (this.editMode == true) {
-            
+
+                this.formhirarki.put(route('hirarkicuti.update',this.objhirarki.id), {
+                    preserveScroll: true,
+                    preserveState: true,
+                    onSuccess: () => {
+                        this.showModal = !this.showModal;
+                        this.objhirarki = null;
+                        this.formhirarki.reset();
+                    },
+
+                })
 
             } else {
                 this.formhirarki.post(route('hirarkicuti.store'), {
@@ -404,6 +434,25 @@ export default {
             }
 
         },
+        clickedit(value){
+            this.editMode = true;
+            this.objhirarki = value;
+            this.showModal = !this.showModal;
+            this.formhirarki.nama_hirarki = value.nama_hirarki;
+            this.formhirarki.detail =  value.detail.map(det => ({
+                    id_pegawai: det.id_pegawai,
+                    urutan : det.urutan.toString()
+            })); 
+            this.formhirarki.model =  value.detail.map(det => ({
+                value: det.id_pegawai, 
+                label : det.header
+            })); 
+        },
+        clickhapus(value){
+            console.log(value);
+            
+
+        }
     },
 
     

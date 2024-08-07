@@ -5,6 +5,9 @@ namespace App\Http\Middleware;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Auth;
+use Modules\Cuti\Models\Notifikasi;
+
+use Modules\Pegawai\Models\Pegawai;
 class HandleInertiaRequests extends Middleware
 {
     /**
@@ -29,27 +32,56 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+
         if (Auth::check()) {
+           
             if( Auth::user()->hasRole('admin')){
+                $notifikasi = [];
                 $menuDashboard = collect([
                     [
-                    'id_header' => 0,
-                    "header"=> "Home",
+                        'id_header' => 0,
+                        "header"=> "Home",
+                        "order"=> 0,
+                        "menu" => array(
+                                [
+                                    "id"=> 1,
+                                    "title"=> "Dashboard",
+                                    "url"=> "dashboard",
+                                    "name_route"=> "admin",
+                                    "icon"=> null,
+                                    'children'=>[]
+                
+                                ],
+                            )
+                    ],
+                    [
+                    'id_header' => 1,
+                    "header"=> "Cuti",
                     "order"=> 0,
                     "menu" => array(
                         [
                             "id"=> 1,
-                            "title"=> "Dashboard",
-                            "url"=> "dashboard",
-                            "name_route"=> "admin",
+                            "title"=> "List Pengajuan Cuti",
+                            "url"=> "list-pengajuan-cuti",
+                            "name_route"=> "admin-list-pengajuan-cuti",
                             "icon"=> null,
                             'children'=>[]
         
                         ],
-                    )
-                        ],
                         [
-                            'id_header' => 1,
+                            "id"=> 2,
+                            "title"=> "Rekap Cuti",
+                            "url"=> "rekap-cuti",
+                            "name_route"=> "admin-rekap-cuti",
+                            "icon"=> null,
+                            'children'=>[]
+        
+                        ]
+                      
+                        )
+                    ],
+                        [
+                            'id_header' => 2,
                             "header"=> "Manajemen",
                             "order"=> 0,
                             "menu" => array(
@@ -80,28 +112,11 @@ class HandleInertiaRequests extends Middleware
                                     'children'=>[]
                 
                                 ],
-                                [
-                                    "id"=> 4,
-                                    "title"=> "Rekap Cuti",
-                                    "url"=> "rekap-cuti",
-                                    "name_route"=> "admin-rekap-cuti",
-                                    "icon"=> null,
-                                    'children'=>[]
-                
-                                ],
-                                [
-                                    "id"=> 5,
-                                    "title"=> "List Pengajuan Cuti",
-                                    "url"=> "list-pengajuan-cuti",
-                                    "name_route"=> "admin-list-pengajuan-cuti",
-                                    "icon"=> null,
-                                    'children'=>[]
-                
-                                ]
+                                
                             )
                         ],
                         [
-                            'id_header' => 2,
+                            'id_header' => 3,
                             "header"=> "Setting",
                             "order"=> 0,
                             "menu" => array(
@@ -137,7 +152,58 @@ class HandleInertiaRequests extends Middleware
                     ]
         
                 );
-            }else{
+            }elseif( Auth::user()->hasRole('pimpinan')){
+                $notifikasi = [];
+                $menuDashboard = collect([
+                        [
+                        'id_header' => 0,
+                        "header"=> "Home",
+                        "order"=> 0,
+                        "menu" => array(
+                            [
+                                "id"=> 1,
+                                "title"=> "Dashboard",
+                                "url"=> "dashboard",
+                                "name_route"=> "admin",
+                                "icon"=> null,
+                                'children'=>[]
+            
+                            ],
+                        )
+                        ],
+                        [
+                            'id_header' => 1,
+                            "header"=> "Cuti",
+                            "order"=> 0,
+                            "menu" => array(
+                                [
+                                    "id"=> 1,
+                                    "title"=> "List Pengajuan Cuti",
+                                    "url"=> "list-pengajuan-cuti",
+                                    "name_route"=> "admin-list-pengajuan-cuti",
+                                    "icon"=> null,
+                                    'children'=>[]
+                
+                                ],
+                                [
+                                    "id"=> 2,
+                                    "title"=> "Rekap Cuti",
+                                    "url"=> "rekap-cuti",
+                                    "name_route"=> "admin-rekap-cuti",
+                                    "icon"=> null,
+                                    'children'=>[]
+                
+                                ]
+                              
+                                )
+                            ],
+                    ]
+                );
+            }
+            else{
+
+                $pegawai = Pegawai::where('nomor_induk_pegawai',Auth::user()->username)->first();
+                $notifikasi = Notifikasi::where('id_pegawai',$pegawai->id)->where('status',0)->limit(2)->get();
                 $menuDashboard = collect([
                     [
                     'id_header' => 0,
@@ -162,7 +228,7 @@ class HandleInertiaRequests extends Middleware
                             "menu" => array(
                                 [
                                     "id"=> 1,
-                                    "title"=> "Ajukan Cuti",
+                                    "title"=> "Pengajuan Cuti",
                                     "url"=> "admin/cuti",
                                     "name_route"=> "admin-index-cuti",
                                     "icon"=> null,
@@ -203,6 +269,7 @@ class HandleInertiaRequests extends Middleware
                 );
             }
         }else{
+            $notifikasi = [];
             $menuDashboard = [];
         }
       
@@ -213,6 +280,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'menu' => $menuDashboard,
+            'notifikasi'=> $notifikasi
         ];
     }
 }

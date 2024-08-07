@@ -56,6 +56,19 @@ return [
             'throw' => false,
         ],
 
+      'webdav' => [
+            'driver'     => 'webdav',
+            'baseUri'    => env("WEBDAV_BASEURL"),
+            'userName'   => env("WEBDAV_USERNAME"),
+            'password'   => env("WEBDAV_PASSWORD"),
+            'pathPrefix' => env("WEBDAV_PATHPREFIX", ''),
+
+            // Optional prameters
+            // 'proxy'      => env("WEBDAV_PROXY", 'locahost:8888'),
+            // 'authType'   => env("WEBDAV_AUTHTYPE", null),
+            // 'encoding'   => env("WEBDAV_ENCODING", null),
+        ],
+
     ],
 
     /*

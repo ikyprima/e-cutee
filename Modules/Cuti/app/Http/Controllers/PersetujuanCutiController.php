@@ -10,7 +10,9 @@ use Inertia\Inertia;
 use Modules\Cuti\Models\AjukanCutiPersetujuan;
 use Modules\Cuti\Models\DetailHirarki;
 use Modules\Cuti\Models\AjukanCuti;
+use Modules\Cuti\Http\Controllers\CutiController;
 use Modules\Pegawai\Models\Pegawai;
+
 use Auth;
 class PersetujuanCutiController extends Controller
 {
@@ -23,6 +25,7 @@ class PersetujuanCutiController extends Controller
         $id_pegawai =  $pegawai->id;
         $dataCuti = AjukanCutiPersetujuan::where([['id_pegawai',$id_pegawai],['aktif',1]])
         ->with('masterajukancuti.pegawai.hasJabatan.jabatan')
+        ->orderBy('created_at', 'desc')
         ->paginate(10)
         ->through(function($item){
             $tanggal = $item->masterajukancuti->detailTanggal->map(function($item){
@@ -72,6 +75,7 @@ class PersetujuanCutiController extends Controller
                 'telp'=> $item->masterajukancuti->telp,
                 'status_pengajuan'=> $item->masterajukancuti->status, //status dokumen pengajuan cuti
                 'status_persetujuan'=>$item->status, //status persetujuan per orang
+                'lampiran'=>$item->masterajukancuti->detailLampiran,
                 'stringstat'=> [
                     'nama'=>$stat,
                     'kode'=> $item->status,
@@ -143,6 +147,14 @@ class PersetujuanCutiController extends Controller
                 return to_route('admin-persetujuan-cuti')->with(['message'=>'Sukses Simpan Data']);
             }else{
                 //jika tidak ada berarti baris terakhir, atau prose persetujuan sudah selesai, update table master persetujuan
+                //Generate Dokumen Blanko
+                $requestpdf = new Request([
+                    "id" => $request->id_ajukan_cuti,
+                ]);
+               
+                $pdf = app(CutiController::class)->pdfBlanko($requestpdf);
+                // $word = app(CutiController::class)->generateDocumentIzinCuti($requestpdf);
+
                 AjukanCutiPersetujuan::where('id', $request->id)->update(
                     [
                         'status' => 1, //0 menunggu, 1 Disetujui, 2 Ditolak

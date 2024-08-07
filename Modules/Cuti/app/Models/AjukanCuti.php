@@ -9,6 +9,10 @@ use Modules\Cuti\Models\AjukanCutiTanggal;
 use Modules\Cuti\Models\AjukanCutiPersetujuan;
 use Modules\Cuti\Models\JenisCuti;
 use Modules\Pegawai\Models\ModelPegawai;
+use Modules\Cuti\Models\AjukanCutiLampiran;
+use Modules\Cuti\Models\DokumenOutput;
+use Modules\Cuti\Models\PersetujuanPimpinan;
+
 class AjukanCuti extends Model
 {
     use HasFactory;
@@ -35,5 +39,14 @@ class AjukanCuti extends Model
     
     function pegawai(){
         return $this->hasOne(ModelPegawai::class,'id','id_pegawai');
+    }
+    function detailLampiran(){
+        return $this->hasMany(AjukanCutiLampiran::class,'id_cuti_ajukan','id');
+    }
+    function dokumenOutput(){
+        return $this->hasMany(DokumenOutput::class,'id_cuti_ajukan','id');
+    }
+    function persetujuanPimpinan(){
+        return $this->hasOne(PersetujuanPimpinan::class,'id_ajukan_cuti','id');
     }
 }

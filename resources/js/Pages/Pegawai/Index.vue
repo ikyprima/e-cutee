@@ -72,9 +72,10 @@ import Dialog from '@/Components/notus/Dialog.vue';
             <div class="w-full mb-12 px-4">
 
                 <card-table @klik="klikMethod" @clickedit="clickedit" @clickhapus="clickhapus" :list=pegawai.data :header=setting namaTitle='LIST PEGAWAI'> 
+
                     <template #button>
                         <div class="hidden md:block">
-                            <!-- <ButtonTambah @click="tambahData">Tambah</ButtonTambah> -->
+                            <ButtonTambah @click="tambahData">Tambah</ButtonTambah>
                         </div>
 
                         <div class="md:min-w-full md:hidden block">

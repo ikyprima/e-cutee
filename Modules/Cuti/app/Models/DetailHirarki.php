@@ -7,15 +7,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Cuti\Database\Factories\DetailHirarkiFactory;
 use Modules\Pegawai\Models\PegawaiHasJabatan;
 use Modules\Pegawai\Models\Pegawai;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class DetailHirarki extends Model
 {
     use HasFactory;
-
+    use SoftDeletes;
     /**
      * The attributes that are mass assignable.
      */
     protected $table ='tb_cuti_det_hirarki';
+    protected $dates = ['deleted_at'];
+
     protected $fillable = ['id_hirarki','urutan','id_jabatan','id_pegawai'];
 
     protected static function newFactory(): DetailHirarkiFactory

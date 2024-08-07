@@ -10,6 +10,10 @@ const props = defineProps({
         type: String,
         default: '2xl',
     },
+    width: {
+        type: String,
+        default: 'sm',
+    },
     closeable: {
         type: Boolean,
         default: true,
@@ -54,6 +58,13 @@ const maxWidthClass = computed(() => {
         '2xl': 'sm:max-w-2xl',
     }[props.maxWidth];
 });
+const widthClass = computed(() => {
+    return {
+        'sm': 'w-1/4',
+        'md': 'w-1/2'
+        
+    }[props.width];
+});
 </script>
 
 <template>
@@ -79,7 +90,7 @@ const maxWidthClass = computed(() => {
                     </div> -->
                     <div v-if="show"
                         class="  h-screen  outline-none focus:outline-none justify-center items-center flex">
-                        <div class="bg-white rounded-lg md:max-w-md md:mx-auto p-4 fixed inset-x-0 bottom-0  mb-4 mx-4 md:relative w-5/6">
+                        <div class="bg-white rounded-lg p-4 fixed inset-x-0 bottom-0  mb-4 mx-4 md:relative" :class="widthClass" >
                             <slot v-if="show" />
                             
                         </div>

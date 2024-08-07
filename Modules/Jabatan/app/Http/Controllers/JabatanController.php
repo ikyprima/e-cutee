@@ -5,8 +5,12 @@ namespace Modules\Jabatan\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-
+use Inertia\Response;
+use Illuminate\Support\MessageBag;
+use Redirect;
+use Validator;
+use Inertia\Inertia;
+use Modules\Jabatan\Models\Jabatan;
 class JabatanController extends Controller
 {
     /**
@@ -14,7 +18,12 @@ class JabatanController extends Controller
      */
     public function index()
     {
-        return view('jabatan::index');
+        $data = Jabatan::paginate(10);
+
+
+        return Inertia::render('Jabatan/Index',[
+            'data' => $data
+        ]);
     }
 
     /**
@@ -30,7 +39,31 @@ class JabatanController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        //
+        try{
+            $rules = [
+                'nama_jabatan' => [
+                    'required',
+                ],
+            ];
+            $customMessages = [
+                'required' => ':attribute harus di isi.',
+                'unique'=> ':attribute sudah terdaftar',
+                'email'=> 'format :attribute salah'
+            ];
+            $validator = Validator::make($request->all(), $rules, $customMessages)->validate();
+            $role = Jabatan::firstOrCreate([
+                'nama_jabatan' => $request->nama_jabatan
+            ]);
+           
+
+            return Redirect::route('jabatan.index');
+
+        } catch(\Illuminate\Database\QueryException $e){
+            // return dd($e);
+            $text= $e->getMessage();
+            $errors = new MessageBag(['error_global' => [$e->errorInfo[2]]]);
+            return Redirect::back()->withErrors($errors);
+        }
     }
 
     /**
@@ -54,14 +87,55 @@ class JabatanController extends Controller
      */
     public function update(Request $request, $id): RedirectResponse
     {
-        //
+        try {
+            $rules = [
+                'nama_jabatan' => [
+                    'required',
+                ],
+            ];
+            
+            
+            $customMessages = [
+                'required' => ':attribute harus di isi.',
+                'unique'=> ':attribute sudah terdaftar',
+                'email'=> 'format :attribute salah'
+            ];
+            $validator = Validator::make($request->all(), $rules, $customMessages)->validate();
+        
+            $jabatan = Jabatan::updateOrCreate(
+                [
+                    'id'   => $id,
+                ],
+                [
+                
+                    'nama_jabatan' => $request->nama_jabatan,
+                
+                ],
+            );
+    
+            return Redirect::route('jabatan.index');
+        } catch(\Illuminate\Database\QueryException $e){
+            // return dd($e);
+            $text= $e->getMessage();
+            $errors = new MessageBag(['error_global' => [$e->errorInfo[2]]]); //ganti 'role' dengan global error pada file vue
+            return Redirect::back()->withErrors($errors);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy($id) : RedirectResponse
     {
-        //
+        try {
+            Jabatan::where('id',$id )
+            ->delete();
+            return Redirect::route('jabatan.index');
+        } catch(\Illuminate\Database\QueryException $e){
+            // return dd($e);
+            $text= $e->getMessage();
+            $errors = new MessageBag(['error_global' => [$e->errorInfo[2]]]);
+            return Redirect::back()->withErrors($errors);
+        }
     }
 }

@@ -11,6 +11,8 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import image from "@/img/no-image.png";
+import toast from '@/Stores/toast.js';
+import ToastList from '@/Components/notus/Notifications/ToastList.vue';
 // import { Select, initTE } from "tw-elements";
 // initTE({ Select });
 </script>
@@ -22,6 +24,9 @@ import image from "@/img/no-image.png";
     <AdminLayout>
         <template #textnavbar>
             USER
+        </template> 
+        <template v-if="!showModal" #notif>
+            <ToastList  />
         </template> 
         <template #header>
             <header-stats>
@@ -151,6 +156,7 @@ import image from "@/img/no-image.png";
         </div>
     </AdminLayout>
     <Modal :show="showModal" @close="closeShowModal" :maxWidth="'5xl'">
+        <ToastList/>
         <div class="p-2">
             <div class="flex items-start justify-between p-1 border-b border-solid border-blueGray-200 rounded-t">
                 <h3 class="text-xl font-semibold">
@@ -192,6 +198,17 @@ import image from "@/img/no-image.png";
                                 </td>
                             </tr>
                             <tr class="border">
+                                <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left w-1/4"> LAMPIRAN </th>
+                                <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4"> 
+                                    <template v-for="item in objRowSelect.lampiran">
+                                        <SecondaryButton @click="lihatLampiran(item)">
+                                            Lihat
+                                        </SecondaryButton>
+                                    </template>
+                                   
+                                </td>
+                            </tr>
+                            <tr class="border">
                                 <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left w-1/4"> ALAMAT SELAMA CUTI </th>
                                 <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4"> {{objRowSelect.alamat}} </td>
                             </tr>
@@ -224,6 +241,8 @@ import image from "@/img/no-image.png";
                             </tr>
                         </tbody>
                     </table>
+
+                   
             </div>
            
             <div class="mt-6 flex justify-end">
@@ -244,6 +263,13 @@ import image from "@/img/no-image.png";
             </div>
         </div>
     </Modal>
+    <Dialog :show="dialogViewLampiran" @close="closeViewLampiran()" :width="'md'">
+        <div v-if="pdfUrl">
+        <embed :src="pdfUrl" width="100%" height="600px" type="application/pdf">
+        </div>
+    
+       
+    </Dialog>
     <Dialog :show="dialogKonfirmasi" @close="closeDialogKonfirmasi()">
         <div class="p-2">
             <div class="flex items-start justify-between border-b border-solid border-blueGray-200 rounded-t">
@@ -307,8 +333,10 @@ export default {
 
     data() {
         return {
+            pdfUrl: null,
             loadingproses : false,
             dialogKonfirmasi : false,
+            dialogViewLampiran : false,
             statsetujui: false,
             stattolak:false,
             alasantolak: '',
@@ -364,7 +392,7 @@ export default {
                     class: ''
                 },
                 {
-                        title: 'Status Pengajuan',
+                        title: 'Persetujuan Atasan',
                         field: 'stringstat',
                         subfield : [
                             {
@@ -412,13 +440,21 @@ export default {
             this.statsetujui = false;
             this.stattolak = false;
         },
+        closeViewLampiran(){
+            window.URL.revokeObjectURL(this.pdfUrl);
+            this.pdfUrl = null;
+            this.dialogViewLampiran = !this.dialogViewLampiran;
+        
+        },
         klikMethod(value) {
             const method = value.action;
             this[method](value.value)
         },
         view(value){
             this.showModal = !this.showModal;
+
             this.objRowSelect = value;
+
         },
         setujui(){
             // this.closeShowModal
@@ -486,8 +522,46 @@ export default {
                 }
             )
         },
+        lihatLampiran(value){
+        
+            axios.post(route('admin-view-lampiran-cuti'), 
+            {
+                nama_file: value.nama_file,
+                path_file: value.path
+            },
+            {
+                    responseType: 'blob'
+                }).then(response => {
+
+                    if (response.status === 200) {
+                            const url = window.URL.createObjectURL(new Blob(
+                                [response.data],
+                                 { type: 'application/pdf' }
+                                ));
+                            this.pdfUrl = url;
+                            this.dialogViewLampiran = true; // Tampilkan dialog
+
+                        
+                    } else {
+                        // Tangani kasus ketika file tidak ditemukan (misalnya tampilkan pesan error)
+                        toast.add({
+                            message: "File Tidak ditemukan :", response,
+                            category : 'warning'
+                        })
+                    }
+                
+            }).catch(error => {
+                toast.add({
+                    message: "Error loading PDF:", error,
+                    category : 'warning'
+                })
+              
+            });
+    }
 
     },
+
+  
 
     
 };

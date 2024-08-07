@@ -5,6 +5,7 @@ namespace Modules\Cuti\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\MessageBag;
 // use Illuminate\Http\Response;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -14,8 +15,11 @@ use Modules\Pegawai\Models\Pegawai;
 use Modules\Cuti\Models\AjukanCuti;
 use Modules\Cuti\Models\AjukanCutiPersetujuan;
 use Modules\Cuti\Models\AjukanCutiTanggal;
+use Modules\Cuti\Models\AjukanCutiLampiran;
+use Modules\Cuti\Models\Notifikasi;
 use Auth;
 use Validator;
+use Storage;
 class AjukanCutiController extends Controller
 {
     /**
@@ -40,7 +44,19 @@ class AjukanCutiController extends Controller
      */
     public function store(Request $request)
     {
-        
+        $pegawai = Pegawai::with(['jabatanOrganisasi','hasHirarki.hirarki.detailHirarki'])->where('nomor_induk_pegawai',Auth::user()->username)->first();
+        $requestnew = new Request([
+            "id" => $pegawai->id,
+        ]);
+        $rekapCuti = app(CutiController::class)->sisaCuti($requestnew);
+      
+        $jumtanggal = count($request->tanggal);
+        if ($request->jenisCuti == 1 && ($jumtanggal > $rekapCuti['sisa_cuti_tahunan'])) {
+            $errors = new MessageBag(['global_error' => 'Sisa Kuota Cuti Tahunan Anda Tidak Mencukupi']);
+            return Redirect::back()->withErrors($errors);
+        }
+       
+
         // $idUser = 1;
         // $dataInfo = PegawaiHasUser::with('pegawai')->where('id_user',$idUser)->first();
         // $pegawai = collect($dataInfo->pegawai);
@@ -69,10 +85,18 @@ class AjukanCutiController extends Controller
         $rules = [
             'jenisCuti' => ['required'],
             'alasanCuti' => ['required'],
-            'noTelp' => ['required', 'numeric', 'max_digits:13']
+            'noTelp' => ['required', 'numeric', 'max_digits:13'],
+          
         ];
+        if ($request->file != '') {
+            $rules ['file'] = 'mimes:jpg,jpeg,pdf|max:2048';
+        }
+     
         $customMessages = [
-            'required' => 'field harus di isi.',
+            'file.file' => ':attribute harus berupa file yang valid.',
+            'file.mimes' => ':attribute haruss bertipe: jpeg atau pdf.',
+            'file.max' => 'Ukuran :attribute tidak boleh lebih dari 2MB.',
+            'required' => 'Field :attribute harus di isi.',
             'unique'=> 'field sudah terdaftar',
             'email'=> 'format field salah',
             'numeric'=> 'isi hanya boleh angka',
@@ -85,7 +109,9 @@ class AjukanCutiController extends Controller
         ->validate();
 
 
-        $pegawai = Pegawai::with(['jabatanOrganisasi','hasHirarki.hirarki.detailHirarki'])->where('nomor_induk_pegawai',Auth::user()->username)->first();
+
+
+      
         $jabatan =  collect($pegawai->jabatanOrganisasi);
         $hirarki = collect($pegawai->hasHirarki->hirarki);
 
@@ -108,10 +134,12 @@ class AjukanCutiController extends Controller
         $pegawai['hirarki']= $hirarki;
         $pegawai['hirarki']['detail']= $detailHirarki;
     
+        // return $pegawai;
+        
         try {
             //insert ke table ajukan cuti
           
-            
+          
             $formAjukanCuti = AjukanCuti::create([
                 'id_jenis_cuti'=> $request->jenisCuti,
                 'alasan_cuti'=> $request->alasanCuti,
@@ -140,6 +168,46 @@ class AjukanCutiController extends Controller
                     'aktif' => $item['urutan']==1?1:0
                 ]);
             }
+
+            //insert ke notifikasi dengan id pegawai  dari detail hirariki yang pertama
+            Notifikasi::create(
+                [
+
+                    'id_pegawai' => $detailHirarki[0]['id_pegawai'],
+                    'id_ajukan_cuti'=> $id_ajukan_cuti,
+                    'judul'=> 'Pengajuan Cuti',
+                    'deskripsi'=> "Ada Penajuan Cuti Yang Harus Di ACC Dari {$pegawai["nama"]}"
+                ]
+            );
+
+
+            if($request->file != ''){
+
+                // try {
+                //     Storage::disk('webdav')->put('file.txt', 'Konten file');
+                // } catch (\Exception $e) {
+                //     dd($e->getMessage());
+                // }
+
+             
+
+                if (!Storage::disk('local')->exists('lampiran_cuti')) {
+                    Storage::disk('local')->makeDirectory('lampiran_cuti');
+                }
+                
+                $file      = $request->file('file');
+                $fileName   =  $id_ajukan_cuti.'_'.time() . '.' . $file->extension();
+                Storage::disk('local')->putFileAs('lampiran_cuti', $file, $fileName);
+
+                AjukanCutiLampiran::create([
+                    'id_cuti_ajukan' =>  $id_ajukan_cuti,
+                    'path' => 'lampiran_cuti',
+                    'nama_file' =>  $fileName
+                ]);
+
+            }
+
+
             return Redirect::route('admin-index-cuti');
         } catch (\Throwable $th) {
             //throw $th;
@@ -181,7 +249,60 @@ class AjukanCutiController extends Controller
     }
 
     public function ajukanCuti(Request $request){
+
         
-        return Inertia::render('Cuti/AjukanCuti');
+        $pegawai = Pegawai::where('nomor_induk_pegawai',Auth::user()->username)->first();
+        $dataCuti = AjukanCuti::with('detailTanggal')->where('id_pegawai',$pegawai->id)->get();
+        $tanggal =  $dataCuti->pluck('detailTanggal')->flatten();
+        $request = new Request([
+            "id" => $pegawai->id,
+        ]);
+        $rekapCuti = app(CutiController::class)->sisaCuti($request);
+        return Inertia::render('Cuti/AjukanCuti',[
+            'data_tanggal' => $tanggal,
+            'rekap_cuti' =>$rekapCuti
+        ]);
     }
+
+    public function viewLampiran(Request $request)
+        {
+            
+            //  if(storage::disk('local')->exists('lampiran_cuti/8_1720168s494.pdf')){
+            //     return 'true';
+            //  }else{
+            //     return 'false';
+            //  };
+            $pathFile = $request->path_file;
+            $namaFile = $request->nama_file;
+            $filePath = storage_path('app/'.$pathFile.'/'.$namaFile);
+            // Pastikan file ada
+            if (!file_exists($filePath)) {
+                
+                // abort(404);
+                return response()->json(['error' => 'File not fousnd.'], 404);
+            }else{
+
+                $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+                switch ($extension) {
+                    case 'pdf':
+                        $contentType = 'application/pdf';
+                        break;
+                    case 'jpg':
+                    case 'jpeg':
+                        $contentType = 'image/jpeg';
+                        break;
+                    default:
+                        return response()->json(['error' => 'Unsupported file type.'], 400);
+                }
+                
+            return response()->file($filePath, [
+
+                'Content-Type' =>$contentType,
+                'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+            ]);
+            }
+
+        }
 }

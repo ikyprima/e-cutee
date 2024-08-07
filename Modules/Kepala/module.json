@@ -1,0 +1,11 @@
+{
+    "name": "Kepala",
+    "alias": "kepala",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Kepala\\Providers\\KepalaServiceProvider"
+    ],
+    "files": []
+}

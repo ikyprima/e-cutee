@@ -33,16 +33,19 @@ class RekapCutiController extends Controller
             ]);
 
             foreach ($master as $key => $value) {
-                $jumlah =  $item->dataAjukanCuti->where('id_jenis_cuti',$value['id'])->sum(function ($item) {
+
+                $jumlah =  $item->dataAjukanCuti->where('id_jenis_cuti',$value['id'])->where('status',1)
+                ->sum(function ($item) {
                     return count($item->detailTanggal);
                 }); 
+
                 $data->put(strtolower(str_replace(' ', '_', $value['jenis_cuti'])), (string)$jumlah);
             }
             return $data;
         });
         
         
-      
+        // return $rekapcuti;
 
 
         return Inertia::render('Cuti/RekapCuti',[

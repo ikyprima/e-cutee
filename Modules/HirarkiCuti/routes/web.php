@@ -16,4 +16,5 @@ use Modules\HirarkiCuti\Http\Controllers\HirarkiCutiController;
 
 Route::group([], function () {
     Route::resource('hirarkicuti', HirarkiCutiController::class)->names('hirarkicuti');
+
 });

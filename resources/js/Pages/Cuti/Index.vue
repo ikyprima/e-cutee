@@ -10,17 +10,23 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
+import image from "@/img/no-image.png";
+import toast from '@/Stores/toast.js';
+import ToastList from '@/Components/notus/Notifications/ToastList.vue';
 // import { Select, initTE } from "tw-elements";
 // initTE({ Select });
 </script>
 
 <template>
 
-    <Head title="Persetujuan Cuti" />
+    <Head title="List Pengajuan Cuti" />
 
     <AdminLayout>
         <template #textnavbar>
-            USER
+            LIST PENGAJUAN CUTI
+        </template> 
+        <template v-if="!dialogView" #notif>
+            <ToastList  />
         </template> 
         <template #header>
             <header-stats>
@@ -237,10 +243,10 @@ import TextInput from '@/Components/TextInput.vue';
                             <span class="font-bold"> {{ objRowSelect.detail_persetujuan? moment(objRowSelect.detail_persetujuan[1].updated_at).format('DD-MM-YYYY hh:mm:ss')  :'' }} </span></td>
                         
                     </tr>
-                </table>
-                </div>
-            
-            </div>
+                        </table>
+                        </div>
+                    
+                    </div>
 
                     <div class="w-full lg:w-full mt-5 ">
                         <div class="grid grid-cols-1 m-4">
@@ -367,7 +373,7 @@ import TextInput from '@/Components/TextInput.vue';
         </div>
     </AdminLayout>
     
-    <Dialog :show="dialogView" @close="closeDialogView()">
+    <!-- <Dialog :show="dialogView" @close="closeDialogView()">
         <div class="flex m-4 md:flex items-center">
         
             <ol class="relative border-s border-gray-200 dark:border-gray-500">                  
@@ -391,7 +397,182 @@ import TextInput from '@/Components/TextInput.vue';
             <button v-on:click="closeDialogView()" class="block w-full md:inline-block md:w-auto px-4 py-3 md:py-2 bg-gray-200 rounded-lg font-semibold text-sm mt-4
             md:mt-0 md:order-1">TUTUP</button>
         </div>
+    </Dialog> -->
+
+    <Modal :show="dialogView" @close="closeDialogView" :maxWidth="'5xl'">
+        <ToastList/>
+        <div class="p-2">
+            <div class="flex items-start justify-between p-1 border-b border-solid border-blueGray-200 rounded-t">
+                <h3 class="text-xl font-semibold">
+                    View Detail Persetujuan
+                </h3>
+            </div>
+            <div class="block w-full overflow-x-auto p-6">
+                    <table class="items-center w-full bg-transparent border-collapse">
+                        <thead class="thead-light">
+                            
+                        </thead>
+                        <tbody>
+                            <tr class="border">
+                                <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-3 text-left w-1/4"> NAMA </th>
+                                <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-3">{{objRowSelect.pegawai.nama}}  </td>
+                            </tr>
+                            <tr class="border">
+                                <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-3 text-left w-1/4"> NIP </th>
+                                <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-3">{{objRowSelect.pegawai.nomor_induk_pegawai}} </td>
+                            </tr>
+                            <tr class="border">
+                                <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left w-1/4"> JABATAN </th>
+                                <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4">{{objRowSelect.pegawai.jabatan_organisasi.nama_jabatan}} </td>
+                            </tr>
+                            <tr class="border">
+                                <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left w-1/4"> JENIS CUTI </th>
+                                <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4"> {{objRowSelect.jenis_cuti.jenis_cuti}} </td>
+                            </tr>
+                            <tr class="border">
+                                <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left w-1/4"> ALASAN CUTI </th>
+                                <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4"> {{objRowSelect.alasan_cuti}} </td>
+                            </tr>
+                            <tr class="border">
+                                <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left w-1/4"> TANGGAL CUTI </th>
+                                <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4"> 
+                                    <span v-for="item in objRowSelect.tanggal" class="text-s font-semibold inline-block py-1 px-2 uppercase rounded-full last:mr-0 mr-1 text-blue-200 bg-blue-500">
+                                        {{ item.date }}
+                                </span>
+                                </td>
+                            </tr>
+                            <tr class="border">
+                                <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left w-1/4"> LAMPIRAN </th>
+                                <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4"> 
+                                    <template v-for="item in objRowSelect.lampiran">
+                                        <SecondaryButton @click="lihatLampiran(item)">
+                                            Lihat
+                                        </SecondaryButton>
+                                    </template>
+                                   
+                                </td>
+                            </tr>
+                            <tr class="border">
+                                <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left w-1/4"> ALAMAT SELAMA CUTI </th>
+                                <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4"> {{objRowSelect.alamat}} </td>
+                            </tr>
+                            <tr class="border">
+                                <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left w-1/4"> NO TELP </th>
+                                <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4"> {{objRowSelect.telp}} </td>
+                            </tr>
+                            <tr class="border">
+                                <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left w-1/4"> PERSSETUJUAN CUTI </th>
+                                <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4"> 
+                                    <ol class="relative border-s border-gray-200 dark:border-gray-500">                  
+                                        <li v-for="(timeline, index) in objRowSelect.detail_persetujuan " class="ms-6" 
+                                        :class="(index === objRowSelect.detail_persetujuan.length - 1) ? '' : 'mb-12'">            
+                                            <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-500 dark:bg-blue-900">
+                                                <img class="rounded-full shadow-lg" src="/docs/images/people/profile-picture-3.jpg" @error="$event.target.src = image" alt="Bonnie image"/>
+                                            </span>
+                                            <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900 ">{{ timeline['pegawai']['nama'] }}
+                                                <span class="  text-sm font-medium me-2 px-2.5 py-0.5 rounded  ms-3"
+                                                    :class="(timeline['status'] == 2) ? 'bg-red-100 text-red-800':'bg-blue-100 text-blue-800'"
+                                                >
+                                                    {{ timeline['status'] == 0 ? 'menunggu persetujuan':  timeline['status'] == 1  ? 'disetujui' :  timeline['status'] == 2 ? 'ditolak'  : 'tidak diketahui' }}
+                                                </span>
+                                            </h3>
+                                            <time class="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{{ timeline['jabatan'] }}</time>
+                                            <blockquote v-if="timeline['status'] == 2" class="p-1 my-4 border-s-4 border-gray-300 bg-gray-50 ">
+                                                <p class="text-sm italic font-medium leading-relaxed text-gray-900">"{{ timeline['alasan_tolak'] }}"</p>
+                                            </blockquote>
+                                        </li>
+                                    </ol>
+                                
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                   
+            </div>
+           
+            <div class="mt-6 flex justify-end">
+                <SecondaryButton @click="closeDialogView">
+                    TUTUP
+                </SecondaryButton>
+           
+            </div>
+        </div>
+    </Modal>
+    <Dialog :show="dialogPrint" @close="closeDialogPrint()" >
+        
+        <div class="p-2">
+            <div class="flex items-start justify-between border-b border-solid border-blueGray-200 rounded-t">
+                <h3 class="text-xl font-semibold">
+                    Cetak Dokumen
+                </h3>
+            </div>
+            <div class="relative mt-4 flex-auto">
+
+
+                
+            <ul class="max-w-md divide-y divide-gray-200 dark:divide-gray-400">
+            <li class="pb-3 sm:pb-4" v-for="(item, index) in objRowSelect.dokumen_output" :key="index">
+                <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                
+                    <div class="flex-1 min-w-0">
+                        <!-- <p class="text-sm font-medium text-gray-900 truncate dark:text-black">
+                    
+                        </p> -->
+                        <p class="font-medium text-gray-500 truncate dark:text-gray-600">
+                        {{ item.deskripsi_file }}
+                        </p>
+                    </div>
+                    <div class="inline-flex m-4 items-center text-base font-semibold text-gray-900 dark:text-black">
+                    
+                <a 
+                    class="z-[2] inline-block rounded bg-green-600 px-2 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white 
+                    shadow-[0_4px_9px_-4px_#3b71ca]
+                    transition duration-150 ease-in-out
+                    hover:bg-green-800
+                    hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
+                    focus:z-[3] focus:bg-green-800 
+                    focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
+                    focus:outline-none focus:ring-0 
+                    active:bg-green-800 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
+                    dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] 
+                    dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
+                    dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
+                    dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]
+                    ml-4 
+                    "
+                    data-te-ripple-init
+                    type="button"
+                    id="button-addon2"
+                
+                
+                    :href="route('admin-download-dokumen', {
+                        path: item.path,
+                        nama_file: item.nama_file
+                        })" target="_blank">
+                    CETAK
+                </a>
+                    </div>
+                </div>
+            </li>
+            
+            </ul>
+
+
+            
+            </div>
+            </div>
+
     </Dialog>
+    <Dialog :show="dialogViewLampiran" @close="closeViewLampiran()" :width="'md'">
+        <div v-if="pdfUrl">
+        <embed :src="pdfUrl" width="100%" height="600px" type="application/pdf">
+        </div>
+    
+       
+    </Dialog>
+
+
 </template>
 
 <script>
@@ -403,9 +584,13 @@ export default {
 
     data() {
         return {
+            pdfUrl: null,
             search:'',
             dialogView : false,
+            dialogViewLampiran : false,
             objRowSelect : {},
+            image: image,
+            dialogPrint:false,
             setting: [ //seting header table
                     {
                             title: 'Jenis Cuti',
@@ -443,7 +628,7 @@ export default {
                         align: 'left'
                     },
                     {
-                        title: 'Status',
+                        title: 'Persetujuan Atasan',
                         field: 'stringstat',
                         subfield : [
                             {
@@ -499,6 +684,12 @@ export default {
             this.objRowSelect = {};
             this.dialogView = !this.dialogView;
         },
+        closeViewLampiran(){
+            window.URL.revokeObjectURL(this.pdfUrl);
+            this.pdfUrl = null;
+            this.dialogViewLampiran = !this.dialogViewLampiran;
+        
+        },
         klikMethod(value) {
             const method = value.action;
             this[method](value.value)
@@ -507,17 +698,58 @@ export default {
 
             this.dialogView = !this.dialogView;
             this.objRowSelect = value;
-            console.log(value);
-            console.log('view'+value);
+            // console.log(value);
+            // console.log('view'+value);
 
         },
+
+        lihatLampiran(value){
+            axios.post(route('admin-view-lampiran-cuti'), 
+            {
+                nama_file: value.nama_file,
+                path_file: value.path
+            },
+            {
+                    responseType: 'blob'
+                }).then(response => {
+
+                    if (response.status === 200) {
+                            const url = window.URL.createObjectURL(new Blob(
+                                [response.data],
+                                { type: 'application/pdf' }
+                                ));
+                            this.pdfUrl = url;
+                            this.dialogViewLampiran = true; // Tampilkan dialog
+
+                        
+                    } else {
+                        // Tangani kasus ketika file tidak ditemukan (misalnya tampilkan pesan error)
+                        toast.add({
+                            message: "File Tidak ditemukan :", response,
+                            category : 'warning'
+                        })
+                    }
+                
+            }).catch(error => {
+                toast.add({
+                    message: "Error loading PDF:", error,
+                    category : 'warning'
+                })
+            
+            });
+        },
         cetak(value){
+
+            this.dialogPrint = !this.dialogPrint;
             this.objRowSelect = value;
-            setTimeout(() => {
-                this.generatePDF();
-            }, 1000);
         
         },
+        closeDialogPrint(){
+            this.dialogPrint = !this.dialogPrint;
+        },
+
+        
+        
         generatePDF() {
             //     const printContent = document.getElementById('content-to-print').innerHTML;
             //     const originalContent = document.body.innerHTML;

@@ -182,7 +182,7 @@ export default {
     data() {
         return {
             showModal: false,
-            objpermission : null,
+        
 
             setting: [ //seting header table
                 {
@@ -256,7 +256,7 @@ export default {
             this.showModal = !this.showModal;
         },
         clickedit(value){
-            this.objpermission = value;
+          
             this.showModal = !this.showModal;
         
         },

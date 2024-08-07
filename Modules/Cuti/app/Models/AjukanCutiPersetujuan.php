@@ -33,4 +33,5 @@ class AjukanCutiPersetujuan extends Model
         return $this->hasOne(AjukanCuti::class, 'id','id_ajukan_cuti');
     }
     
+    
 }

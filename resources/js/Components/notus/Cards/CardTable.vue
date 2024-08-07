@@ -105,6 +105,7 @@
                       </template>
                   </td>
                 </template>
+
                 <template v-else-if="datax.type == 'badge'">
                   <td
                   class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-s text-slate-500 whitespace-nowrap p-2"
@@ -119,7 +120,7 @@
                 </template>
                 
                 <template v-else>
-                  <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-s text-slate-500 whitespace-nowrap p-2 "
+                  <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-s text-slate-500  p-2 "
                     :class="['text-' + datax.align, 'w-' + datax.size, datax.class]">
                     <div v-if="datax.type == 'string'">
                       {{ data[datax.field] ? data[datax.field] : '-' }}
@@ -174,7 +175,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import image from "@/img/no-image.png";
 export default {
   
-  emits: ['klik'],
+  emits: ['klik','clickedit','clickhapus'],
   data() {
 
     return {
