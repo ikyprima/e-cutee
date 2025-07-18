@@ -24,6 +24,7 @@ class ProfileController extends Controller
             return Inertia::render('Admin/index-admin');
         
         }elseif (Auth::user()->hasRole('pimpinan')) {
+       
             $dataCuti = AjukanCuti::where('status',1)
             ->doesntHave('persetujuanPimpinan')
             ->with('persetujuanPimpinan','dokumenOutput','pegawai.jabatanOrganisasi','jenisCuti','detailTanggal','detailPersetujuan.pegawai')
@@ -51,7 +52,6 @@ class ProfileController extends Controller
                 $item['lampiran']= $item->detailLampiran;
                 return $item;
             });
-        
             return Inertia::render('Admin/index-pimpinan',[
                 'dataCuti' => $dataCuti,
                 'header' => "Persetujuan Kepala Badan",

@@ -15,7 +15,7 @@ class HirarkiHasPegawai extends Model
      */
     protected $table = 'tb_cuti_hirarki_has_pegawai';
     protected $fillable = ['id_hirarki','id_pegawai'];
-
+    
     protected static function newFactory(): HirarkiHasPegawaiFactory
     {
         //return HirarkiHasPegawaiFactory::new();

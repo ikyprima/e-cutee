@@ -5,7 +5,7 @@ import CardTable from "@/Components/notus/Cards/CardTable.vue";
 import HeaderStats from "@/Components/notus/Headers/HeaderStats.vue";
 import CardStats from "@/Components/notus/Cards/CardStats.vue";
 import { Head,Link,router } from '@inertiajs/vue3';
-
+import moment from 'moment';
 import DangerButton from '@/Components/DangerButton.vue';
 import Multiselect from '@vueform/multiselect'
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -188,7 +188,6 @@ import Dialog from '@/Components/notus/Dialog.vue';
                                 :searchable="true"
                                 @select="(value) => pilihHirarki(value)"
                                 />
-                          
                         </div>
                         
                     </div>
@@ -207,7 +206,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
                                 </tr>
                             </tbody>
                         </table>
-                </div>
+                    </div>
                 </form>
             </div>
             <div class="mt-6 flex justify-end">
@@ -230,7 +229,7 @@ import Dialog from '@/Components/notus/Dialog.vue';
         <div class="p-2">
             <div class="flex items-start justify-between p-1 border-b border-solid border-blueGray-200 rounded-t">
                 <h3 class="text-xl font-semibold">
-                    Tambah
+                    Tambah Data Pegawai
                 </h3>
             </div>
             <div class="relative p-6 flex-auto">
@@ -238,20 +237,128 @@ import Dialog from '@/Components/notus/Dialog.vue';
                     
                     <div class="grid grid-cols-1 md:grid-cols-1 ">
                         <div class="relative mb-2">
-                            <InputLabel for="permission" value="Permission" class="" />
+                            <InputLabel for="nip" value="Nomor Induk Pegawai" class="" />
                             <TextInput
-                                id="permission"
-                                ref="permissionInput"
+                                id="nip"
+                                ref="nipInput"
                                 type="text"
                                 class="mt-1 block w-full"
-                                placeholder="Permission"
-                                v-model="formAddHirarki.permission"
+                                placeholder="nomor induk pegawai"
+                                v-model="formAddPegawai.nip"
                             />
-                            <p v-if="formAddHirarki.errors.permission" 
+                            <p v-if="formAddPegawai.errors.nip" 
                                 class="mt-2 text-sm text-red-600 dark:text-red-500">
-                                {{formAddHirarki.errors.permission }}
+                                {{formAddPegawai.errors.nip }}
                             </p>
                         </div>
+                        <div class="relative mb-2">
+                            <InputLabel for="nama_pegawai" value="Nama Pegawai" class="" />
+                            <TextInput
+                                id="nama_pegawai"
+                                ref="nama_pegawaiInput"
+                                type="text"
+                                class="mt-1 block w-full"
+                                placeholder="nama pegawai"
+                                v-model="formAddPegawai.nama"
+                            />
+                            <p v-if="formAddPegawai.errors.nama" 
+                                class="mt-2 text-sm text-red-600 dark:text-red-500">
+                                {{formAddPegawai.errors.nama }}
+                            </p>
+                        </div>
+                        <div class="relative mb-2">
+                            <InputLabel for="nama_pangkat" value="Nama Pangakat" class="" />
+                            <TextInput
+                                id="nama_pangkat"
+                                ref="nama_pangkatInput"
+                                type="text"
+                                class="mt-1 block w-full"
+                                placeholder="nama pangkat"
+                                v-model="formAddPegawai.nama_pangkat"
+                            />
+                            <p v-if="formAddPegawai.errors.nama_pangkat" 
+                                class="mt-2 text-sm text-red-600 dark:text-red-500">
+                                {{formAddPegawai.errors.nama_pangkat }}
+                            </p>
+                        </div>
+                        <div class="relative mb-2">
+                            <InputLabel for="tempat_lahir" value="Tempat Lahir" class="" />
+                            <TextInput
+                                id="tempat_lahir"
+                                ref="tempat_lahirInput"
+                                type="text"
+                                class="mt-1 block w-full"
+                                placeholder="tempat lahir"
+                                v-model="formAddPegawai.tempat_lahir"
+                            />
+                            <p v-if="formAddPegawai.errors.tempat_lahir" 
+                                class="mt-2 text-sm text-red-600 dark:text-red-500">
+                                {{formAddPegawai.errors.tempat_lahir }}
+                            </p>
+                        </div>
+                        <div class="relative mb-2">
+                            <InputLabel for="tanggal_lahir" value="Tanggal Lahir" class="" />
+                            <VueDatePicker 
+                                id="tanggal_lahir"
+                                v-model="formAddPegawai.tgl_lahir"
+                                :enable-time-picker="false" 
+                                :format="'dd-MM-yyyy'"
+                                class="mt-1 block w-full "
+                            />
+                            <p v-if="formAddPegawai.errors.tgl_lahir" 
+                                class="mt-2 text-sm text-red-600 dark:text-red-500">
+                                {{formAddPegawai.errors.tgl_lahir }}
+                            </p>
+                        </div>
+                        <div class="relative mb-2">
+                            <InputLabel for="jabatan_organisasi" value="Jabatan Organisasi" class="" />
+                            <Multiselect 
+                                v-bind="optionJabatanOrgSelect"
+                                v-model="formAddPegawai.id_jabatan_organisasi"
+                            />
+                            <p v-if="formAddPegawai.errors.id_jabatan_organisasi" 
+                                class="mt-2 text-sm text-red-600 dark:text-red-500">
+                                {{formAddPegawai.errors.id_jabatan_organisasi }}
+                            </p>
+                        </div>
+                        <div class="relative mb-2">
+                            <InputLabel for="jabatan_defenitif" value="Jabatan Defenitif / Jabatan Per ASN" class="" />
+                            <Multiselect 
+                                v-bind="optionJabatanDefSelect"
+                                v-model="formAddPegawai.id_jabatan_defenitif"
+                            />
+                            <p v-if="formAddPegawai.errors.id_jabatan_defenitif" 
+                                class="mt-2 text-sm text-red-600 dark:text-red-500">
+                                {{formAddPegawai.errors.id_jabatan_defenitif }}
+                            </p>
+                        </div>
+                        <div class="relative mb-2">
+                            <InputLabel for="nama_hirarki" value="Pilih Alur Surat" class="" />
+                            <Multiselect 
+                                valueProp="id" 
+                                label="nama_hirarki" 
+                                class="mt-1 block w-full" 
+                                :options="hirarki"
+                                :searchable="true"
+                                @select="(value) => pilihHirarkiAddPegawai(value)"
+                                />
+                        </div>
+                        <div class="block w-full overflow-x-auto pt-4" v-if="arrPilihHirarki.length > 0">
+                        <table class="items-center w-full bg-transparent border-collapse">
+                            <thead>
+                                <tr class="border">
+                                    <th class="border px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-3 text-left w-1/4"> NAMA ATASAN </th>
+                                    <th class="border px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-3 text-center w-1/4"> URUTAN </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border" v-for="data in arrPilihHirarki">
+                                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-3 text-left w-1/4"> {{data.pegawai.nama}} </td>
+                                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm text-center whitespace-nowrap p-3"> {{data.urutan}}   </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                         
                     </div>
                     
@@ -262,8 +369,8 @@ import Dialog from '@/Components/notus/Dialog.vue';
                 <SecondaryButton @click="closeModal">
                     Batal
                 </SecondaryButton>
-                <PrimaryButton class="ml-3" v-on:click="simpan" 
-                :class="{ 'opacity-25': formAddHirarki.processing }" :disabled="formAddHirarki.processing">
+                <PrimaryButton class="ml-3" v-on:click="simpanAddPegawai" 
+                :class="{ 'opacity-25': formAddPegawai.processing }" :disabled="formAddPegawai.processing">
                 <div v-if="editMode == true">
                     Simpan Perubahan
                 </div>
@@ -321,6 +428,51 @@ export default {
                 id_hirarki: '',
                 id_pegawai: '',
             }),
+            formAddPegawai: this.$inertia.form({
+                nip: '',
+                nama: '',
+                nama_pangkat: '',
+                tempat_lahir: '',
+                tgl_lahir: '',
+                tgl_lahir: '',
+                id_jabatan_organisasi: '',
+                id_jabatan_defenitif : '',
+                id_hirarki: ''
+            }),
+            optionJabatanOrgSelect: {
+                closeOnSelect: true,
+                placeholder: 'pilih jabatan organisasi',
+                filterResults: false,
+                minChars: 3,
+                resolveOnLoad: false,
+                infinite: true,
+                limit: 10,
+                clearOnSearch: true,
+                delay: 0,
+                searchable: true,
+                canClear :  true,
+                object: false,
+                options: async (query) => {
+                    return await this.cariJabatanOrg(query)
+                },
+            },
+            optionJabatanDefSelect: {
+                closeOnSelect: true,
+                placeholder: 'pilih jabatan defenitif',
+                filterResults: false,
+                minChars: 3,
+                resolveOnLoad: false,
+                infinite: true,
+                limit: 10,
+                clearOnSearch: true,
+                delay: 0,
+                searchable: true,
+                canClear :  true,
+                object: false,
+                options: async (query) => {
+                    return await this.cariJabatanDef(query)
+                },
+            },
 
             setting: [ //seting header table
                 {
@@ -411,10 +563,14 @@ export default {
             this.showModal = !this.showModal;
             this.formAddHirarki.reset()
             this.formAddHirarki.clearErrors()
+            this.formAddPegawai.reset()
+            this.formAddPegawai.clearErrors()
         },
         closeModal(){
             this.editMode = false;
             this.showModal = !this.showModal;
+              this.formAddPegawai.reset()
+            this.formAddPegawai.clearErrors()
         
         },
         closeModalAddHirarki(){
@@ -423,6 +579,8 @@ export default {
             this.formAddHirarki.reset()
             this.formAddHirarki.clearErrors()
             this.arrPilihHirarki = []
+            this.formAddPegawai.reset()
+            this.formAddPegawai.clearErrors()
         
         },
         klikMethod(value) {
@@ -460,6 +618,22 @@ export default {
             }
 
         },
+        simpanAddPegawai(){
+            const formattedDate = this.formAddPegawai.tgl_lahir 
+            ? moment(this.formAddPegawai.tgl_lahir).format('YYYY-MM-DD')
+            : null;
+            this.formAddPegawai.tgl_lahir = formattedDate;
+            this.formAddPegawai.post(route('pegawai.store'), {
+                    preserveScroll: true,
+                    preserveState: true,
+                    onSuccess: () => {
+                        this.showModal = !this.showModal;
+                        this.formAddPegawai.reset();
+                        this.formAddPegawai.clearErrors();
+                    },
+                })
+        },
+        
         simpanAddHirarki(){
             this.formAddHirarki.post(route('pegawai.add.hirarki'), {
                     preserveScroll: true,
@@ -486,7 +660,43 @@ export default {
             this.arrPilihHirarki = hirarki.detail_hirarki;
             this.formAddHirarki.id_hirarki = value;
             
+        },
+        pilihHirarkiAddPegawai(value){
+            let hirarki = this.hirarki.find(item => item.id == value)
+            this.arrPilihHirarki = hirarki.detail_hirarki;
+            this.formAddPegawai.id_hirarki = value;
+            
+        },
+        cariJabatanOrg : async(query) => {
+            const url = route('api.jabatan.organisasi.index', { searchall: query });
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText} (Status: ${response.status})`);
+                }
+                const data = await response.json();
+                return data.map((item) => {
+                    return { value: item.id, label: item.nama_jabatan }
+                })
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        },
+        cariJabatanDef : async(query) => {
+            const url = route('api.jabatan.index', { searchall: query });
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText} (Status: ${response.status})`);
+                }
+                const data = await response.json();
+                return data.map((item) => {
+                    return { value: item.id, label: item.nama_jabatan }
+                })
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
         }
+        },
         
     },
 

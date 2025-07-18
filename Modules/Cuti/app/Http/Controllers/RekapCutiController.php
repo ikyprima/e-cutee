@@ -13,11 +13,19 @@ use Illuminate\Support\MessageBag;
 use Modules\Pegawai\Models\Pegawai;
 use Modules\Cuti\Models\JenisCuti;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 class RekapCutiController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+     protected $tahunSekarang;
+
+     public function __construct()
+     {
+         $this->tahunSekarang = Carbon::now()->year;
+     }
     public function index()
     {
         

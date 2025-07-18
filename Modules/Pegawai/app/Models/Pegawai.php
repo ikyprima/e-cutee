@@ -8,6 +8,7 @@ use Modules\Pegawai\Database\Factories\PegawaiFactory;
 use Modules\Jabatan\Models\JabatanOrganisasi;
 use Modules\Cuti\Models\HirarkiHasPegawai;
 use Modules\Cuti\Models\AjukanCuti;
+use Modules\Cuti\Models\SisaCuti2024;
 class Pegawai extends Model
 {
     use HasFactory;
@@ -32,5 +33,8 @@ class Pegawai extends Model
     
     function dataAjukanCuti(){
         return $this->hasMany(AjukanCuti::class,'id_pegawai','id');
+    }
+    public function sisaCuti2024(){
+        return $this->hasOne(SisaCuti2024::class,'id_pegawai','id');
     }
 }

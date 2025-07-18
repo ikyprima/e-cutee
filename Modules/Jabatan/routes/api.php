@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Jabatan\Http\Controllers\JabatanController;
+use Modules\Jabatan\Http\Controllers\JabatanOrganisasiController;
 
 /*
  *--------------------------------------------------------------------------
@@ -14,6 +15,7 @@ use Modules\Jabatan\Http\Controllers\JabatanController;
  *
 */
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('jabatan', JabatanController::class)->names('jabatan');
+Route::middleware([])->prefix('v1')->group(function () {
+    Route::apiResource('jabatan', controller: JabatanController::class)->names('jabatan');
+    Route::apiResource('jabatan-organisasi', controller: JabatanOrganisasiController::class)->names('jabatan.organisasi');
 });

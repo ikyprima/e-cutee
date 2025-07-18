@@ -25,15 +25,28 @@ class CutiController extends Controller
 {
     /**
      * Display a listing of the resource.
-     */
+     */  
+
+    protected $tahunSekarang;
+
+    public function __construct()
+    {
+        $this->tahunSekarang = Carbon::now()->year;
+    }
+
     public function index(Request $request)
     {
-      
         if( Auth::user()->hasAnyRole(['admin','pimpinan'])){
 
-            //cek jika ada edit 
+            
+            if($request->has('tahun')){
+                $tahun =  $request->tahun;
+            }else{
+                $tahun =  $this->tahunSekarang;
+            }
 
             $dataCuti = AjukanCuti::with('dokumenOutput','pegawai.jabatanOrganisasi','jenisCuti','detailTanggal','detailPersetujuan.pegawai')
+            ->whereYear('created_at',  $tahun )
             ->orderBy('created_at', 'desc')
             ->paginate(10)->through(function($item){
 
@@ -162,7 +175,7 @@ class CutiController extends Controller
         $tahun = Carbon::now()->year;
         $tahunlalu = Carbon::now()->year-1;
         $master = JenisCuti::all();
-        $pegawai = Pegawai::where('id',$request->id)->with('dataAjukanCuti.detailTanggal')->first();
+        $pegawai = Pegawai::where('id',$request->id)->with('dataAjukanCuti.detailTanggal','sisaCuti2024')->first();
         $data = collect( [
             'nip'=>$pegawai->nomor_induk_pegawai,
             'nama'=>$pegawai->nama,
@@ -186,19 +199,25 @@ class CutiController extends Controller
             return count($item->detailTanggal);
         }); 
 
-        $cutitahunsekarang = 12 - (int) $data['cuti_tahunan'];
-
-        $cutitahunanlalu = 12 - $cuti_tahunan_lalu;
-        
-        $sisa_cuti_tahun_lalu = $cutitahunanlalu > 6 ? 6 : $cutitahunanlalu  ;
-
+        if ($tahun == 2024) {
+            $dasar = $pegawai->sisaCuti2024?$pegawai->sisaCuti2024->sisa_cuti:12 - $cuti_tahunan_lalu;
+            $cutitahunsekarang = $dasar - (int) $data['cuti_tahunan'] ;
+            $sisa_cuti_tahun_lalu = 0  ;
+            $sisacuti = $dasar - (int) $data['cuti_tahunan'] ;
+        }else{
+            $cutitahunanlalu = 12 - $cuti_tahunan_lalu;
+            $cutitahunsekarang = 12 - (int) $data['cuti_tahunan'];
+            $sisa_cuti_tahun_lalu = $cutitahunanlalu > 6 ? 6 : $cutitahunanlalu  ;
+            $sisacuti =  $sisa_cuti_tahun_lalu + $cutitahunsekarang;
+        }
         return [
             'data_rekap'=> $data,
             'sisa_cuti_tahunan_lalu' =>$sisa_cuti_tahun_lalu,
             'sisa_cuti_tahunan_sekarang'=> $cutitahunsekarang,
-            'sisa_cuti_tahunan' => $sisa_cuti_tahun_lalu + $cutitahunsekarang,
+            'sisa_cuti_tahunan' => $sisacuti,
             'tahun'=> $tahun,
-            'tahun_lalu'=>$tahunlalu
+            'tahun_lalu'=>$tahunlalu,
+            // 'sisa_cuti_2024'=>$pegawai->sisaCuti2024
         ];
 
     }
@@ -426,6 +445,17 @@ class CutiController extends Controller
         $oleh = $status = $dataCuti->detailPersetujuan[0]->pegawai->nama;
         $tanggal = Carbon::parse($dataCuti->detailPersetujuan[0]->update_at)->translatedFormat('d F Y');
         $text = "{$keterangan} oleh {$oleh}, pada tanggal {$tanggal}";
+
+        $jumlahttd =  count($dataCuti->detailPersetujuan);
+        if ($jumlahttd > 1) {
+            $stat = $dataCuti->detailPersetujuan[1]->status;
+            $oleh =  $dataCuti->detailPersetujuan[1]->pegawai->nama;
+            $tanggal = Carbon::parse($dataCuti->detailPersetujuan[1]->update_at)->translatedFormat('d F Y');
+        }else{
+            $oleh =  $dataCuti->detailPersetujuan[0]->pegawai->nama;
+            $tanggal = Carbon::parse($dataCuti->detailPersetujuan[0]->update_at)->translatedFormat('d F Y');
+            $stat = $dataCuti->detailPersetujuan[0]->status;
+        }
         $pdf::MultiCell(190, 6,$text, 1, 'L', false);
         $pdf::Ln(6);
         $pdf::SetFont('times', 'B', 11);
@@ -435,10 +465,10 @@ class CutiController extends Controller
         $pdf::Cell(45,6,'PERUBAHAN ***',1, 0, 'L');
         $pdf::Cell(50,6,'DITANGGUHKAN ***',1, 0, 'L');
         $pdf::Cell(50,6,'TIDAK DISETUJUI',1, 1, 'L');
-        $setuju = $dataCuti->detailPersetujuan ? ($dataCuti->detailPersetujuan[1]->status == 1 ? '4' : '')  :'';
-        $perubahan = $dataCuti->detailPersetujuan ? ($dataCuti->detailPersetujuan[1]->status == 3 ? '4' : '')  :'';
-        $ditangguhkan = $dataCuti->detailPersetujuan ? ($dataCuti->detailPersetujuan[1]->status == 4 ? '4' : '')  :'';
-        $tolak = $dataCuti->detailPersetujuan ? ($dataCuti->detailPersetujuan[1]->status == 2 ? '4' : '')  :'';
+        $setuju = $dataCuti->detailPersetujuan ? ($stat == 1 ? '4' : '')  :'';
+        $perubahan = $dataCuti->detailPersetujuan ? ($stat == 3 ? '4' : '')  :'';
+        $ditangguhkan = $dataCuti->detailPersetujuan ? ($stat == 4 ? '4' : '')  :'';
+        $tolak = $dataCuti->detailPersetujuan ? ($stat == 2 ? '4' : '')  :'';
         $pdf::SetFont('zapfdingbats', '', 11);
         $pdf::Cell(45,6,$setuju,1, 0, 'C');
         $pdf::Cell(45,6,$perubahan,1, 0, 'C');
@@ -447,8 +477,8 @@ class CutiController extends Controller
         $pdf::SetFont('times', '', 11);
         $keterangan = '';
         if ($dataCuti->detailPersetujuan) {
-            $status = $dataCuti->detailPersetujuan[1]->status;
-            switch ($status) {
+            // $status = $dataCuti->detailPersetujuan[1]->status;
+            switch ($stat) {
                 case 1:
                     $keterangan = 'Disetujui';
                     break;
@@ -466,8 +496,7 @@ class CutiController extends Controller
                     break;
             }
         }
-        $oleh = $status = $dataCuti->detailPersetujuan[1]->pegawai->nama;
-        $tanggal = Carbon::parse($dataCuti->detailPersetujuan[1]->update_at)->translatedFormat('d F Y');
+      
         $text = "{$keterangan} oleh {$oleh}, pada tanggal {$tanggal}";
         $pdf::MultiCell(190, 6,$text, 1, 'L', false);
         $pdf::Ln(6);
@@ -588,11 +617,12 @@ class CutiController extends Controller
         }
 
         $templateProcessor = new TemplateProcessor(storage_path('app/templates/template_cuti_tahunan.docx'));
+        $templateProcessor->setValue('nomor',  $request->nomor);
         $templateProcessor->setValue('tahunlalu', $tahunlalu);
         $templateProcessor->setValue('tahunsekarang', $tahun);
         $templateProcessor->setValue('nama', $dataCuti->pegawai->nama);
         $templateProcessor->setValue('nip', $this->formatNip($dataCuti->pegawai->nomor_induk_pegawai));
-        $templateProcessor->setValue('pangkat', '');
+        $templateProcessor->setValue('pangkat', $dataCuti->pegawai->nama_pangkat);
         $templateProcessor->setValue('jabatan', $dataCuti->pegawai->jabatanOrganisasi->nama_jabatan);
         $templateProcessor->setValue('lamahari', "{$jumlahHari}({$terbilangJumlahHari})");
         $templateProcessor->setValue('tanggalsd', $tanggal);

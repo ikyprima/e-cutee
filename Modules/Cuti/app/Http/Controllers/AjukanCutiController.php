@@ -20,6 +20,7 @@ use Modules\Cuti\Models\Notifikasi;
 use Auth;
 use Validator;
 use Storage;
+use DB;
 class AjukanCutiController extends Controller
 {
     /**
@@ -108,10 +109,6 @@ class AjukanCutiController extends Controller
         Validator::make($request->all(), $rules, $customMessages)
         ->validate();
 
-
-
-
-      
         $jabatan =  collect($pegawai->jabatanOrganisasi);
         $hirarki = collect($pegawai->hasHirarki->hirarki);
 
@@ -139,7 +136,7 @@ class AjukanCutiController extends Controller
         try {
             //insert ke table ajukan cuti
           
-          
+            DB::beginTransaction();
             $formAjukanCuti = AjukanCuti::create([
                 'id_jenis_cuti'=> $request->jenisCuti,
                 'alasan_cuti'=> $request->alasanCuti,
@@ -207,10 +204,11 @@ class AjukanCutiController extends Controller
 
             }
 
-
+            DB::commit();
             return Redirect::route('admin-index-cuti');
         } catch (\Throwable $th) {
             //throw $th;
+            DB::rollBack();
             return $th;
         }
     
@@ -250,9 +248,10 @@ class AjukanCutiController extends Controller
 
     public function ajukanCuti(Request $request){
 
-        
+       
         $pegawai = Pegawai::where('nomor_induk_pegawai',Auth::user()->username)->first();
-        $dataCuti = AjukanCuti::with('detailTanggal')->where('id_pegawai',$pegawai->id)->get();
+        $dataCuti = AjukanCuti::with('detailTanggal')->where('id_pegawai',$pegawai->id)
+        ->where('status','!=',2)->get();
         $tanggal =  $dataCuti->pluck('detailTanggal')->flatten();
         $request = new Request([
             "id" => $pegawai->id,

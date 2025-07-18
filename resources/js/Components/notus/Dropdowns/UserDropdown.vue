@@ -28,10 +28,11 @@
     >
       <a
         href="javascript:void(0);"
+        @click="profile"
         class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
       >
         Profile
-      </a>
+    </a>
       
       <div class="h-0 my-2 border border-solid border-blueGray-100" />
     
@@ -46,8 +47,8 @@
 
 <script>
 import { createPopper } from "@popperjs/core";
-import { Link } from '@inertiajs/vue3';
-import image from "@/img/team-1-800x800.jpg";
+import { Link,router } from '@inertiajs/vue3';
+import image from "@/img/user_blank.png";
 
 export default {
   data() {
@@ -56,8 +57,16 @@ export default {
       image: image,
     };
   },
-  components: {Link},
+  components: {Link,router},
   methods: {
+    profile() {
+          router.get(route('profile.edit'), {
+          }, {
+              replace: true,
+              preserveScroll: true,
+              preserveState: true  
+          })
+        },   
     toggleDropdown: function (event) {
       event.preventDefault();
       if (this.dropdownPopoverShow) {

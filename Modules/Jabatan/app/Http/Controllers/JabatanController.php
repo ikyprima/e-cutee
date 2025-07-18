@@ -16,14 +16,55 @@ class JabatanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Jabatan::paginate(10);
+        $is_api_request = $request->route()->getPrefix() === 'api/v1';
 
+        if($request->has('searchall')){
+            if($request->searchall != ''){
+                $jabatanDef = Jabatan::where('nama_jabatan', 'like', '%' . $request->searchall . '%')
+                ->get();
+            }else{
+                $jabatanDef = [];
+            }
+        
+        }elseif($request->has('search')) {
+            # code...
+            $jabatanDef = Jabatan::where('nama_jabatan', 'like', '%' . $request->search . '%')
+            ->paginate(10)->through(function($item){
+        
+                return [
+                    'id'=> $item->id,
+                    'nama_jabatan'=> $item->nama_jabatan
+                ];
+                
+            });
+            $jabatanDef->appends ( array (
+                'search' => $request->search
+            ) );
+            
+        }else{
 
-        return Inertia::render('Jabatan/Index',[
-            'data' => $data
-        ]);
+            $jabatanDef = Jabatan::paginate(10)->through(function($item){
+            
+                return [
+                    'id'=> $item->id,
+                    'nama_jabatan'=> $item->nama_jabatan,
+                    
+                ];
+                
+            });
+
+        
+        }
+        if ($is_api_request) {
+            //jika request dari route api
+            return $jabatanDef;
+        }else{
+            return Inertia::render('Pegawai/Index',[
+                'data'=>$jabatanDef,
+            ]);
+        }
     }
 
     /**

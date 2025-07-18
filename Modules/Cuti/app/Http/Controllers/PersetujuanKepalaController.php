@@ -45,7 +45,7 @@ class PersetujuanKepalaController extends Controller
                 'email'=> 'format :attribute salah'
             ];
             $validator = Validator::make($request->all(), $rules, $customMessages)->validate();
-            PersetujuanPimpinan::firstOrCreate([
+          $persetujuanKepala =  PersetujuanPimpinan::firstOrCreate([
                 'tanggal_persetujuan'=> date('Y-m-d'),
                 'keterangan'=>$request->keterangan?$request->keterangan: null,
                 'status' =>$request->status,
@@ -53,6 +53,7 @@ class PersetujuanKepalaController extends Controller
             ]);
             $requestGenerateDoc = new Request([
                 "id" => $request->id_ajukan_cuti,
+                "nomor" => $persetujuanKepala->id
             ]);
             app(CutiController::class)->generateDocumentIzinCuti($requestGenerateDoc);
             return to_route('admin')->with(['message'=>'Sukses Simpan Data']);

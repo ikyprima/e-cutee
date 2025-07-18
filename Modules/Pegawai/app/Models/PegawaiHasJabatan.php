@@ -13,8 +13,12 @@ class PegawaiHasJabatan extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = [];
+    protected $fillable = ['id_pegawai','id_jabatan'];
     protected $table = 'tb_pegawai_has_jabatan';
+    public $incrementing = false;
+
+    
+    public $timestamps = false;
     protected static function newFactory(): PegawaiHasJabatanFactory
     {
         //return PegawaiHasJabatanFactory::new();
